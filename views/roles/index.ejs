@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Listado de Roles</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Listado de Roles</h1>
+
+        <% if (error) { %>
+            <div class="alert alert-danger">
+                <%= error %>
+            </div>
+            <% } %>
+
+                <div class="actions">
+                    <a href="/roles/new" class="btn btn-primary">Nuevo Rol</a>
+                    <a href="/" class="btn btn-secondary">Volver al Inicio</a>
+                </div>
+
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Usuarios</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% roles.forEach(rol=> { %>
+                            <tr>
+                                <td>
+                                    <%= rol.id %>
+                                </td>
+                                <td>
+                                    <%= rol.nombre %>
+                                </td>
+                                <td>
+                                    <% if (rol.usuarios_count) { %>
+                                        <%= rol.usuarios_count %> usuario(s)
+                                            <% } else { %>
+                                                0 usuarios
+                                                <% } %>
+                                </td>
+                                <td class="actions">
+                                    <a href="/roles/<%= rol.id %>" class="btn btn-sm btn-info">Ver</a>
+                                    <a href="/roles/<%= rol.id %>/edit" class="btn btn-sm btn-warning">Editar</a>
+                                    <form action="/roles/<%= rol.id %>/delete" method="POST" style="display:inline;">
+                                        <button type="submit" class="btn btn-sm btn-danger"
+                                            onclick="return confirm('¿Está seguro que desea eliminar este rol?')">
+                                            Eliminar
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            <% }); %>
+                    </tbody>
+                </table>
+    </div>
+</body>
+
+</html>
