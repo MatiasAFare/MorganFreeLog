@@ -1,4 +1,12 @@
 {
+  "name": "morganfreelog",
+  "version": "1.0.0",
+  "description": "TP para backend",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
   "dependencies": {
     "better-sqlite3": "^11.10.0",
     "cors": "^2.8.5",
