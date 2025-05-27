@@ -1,0 +1,53 @@
+<!-- filepath: c:\Repos\MorganFreeLog\views\roles\edit.ejs -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Editar Rol: <%= rol.nombre %></title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Editar Rol: <%= rol.nombre %></h1>
+
+        <% if (error) { %>
+            <div class="alert alert-danger">
+                <%= error %>
+            </div>
+        <% } %>
+
+        <form action="/roles/<%= rol.id %>/edit" method="POST">
+            <div class="form-group">
+                <label for="nombre">Nombre:</label>
+                <input type="text" id="nombre" name="nombre" value="<%= rol.nombre %>" required class="form-control">
+            </div>
+
+            <div class="form-group">
+                <label>Permisos:</label>
+                <div class="permisos-container">
+                    <% allPermisos.forEach(permiso => { %>
+                        <div class="permiso-check">
+                            <input 
+                                type="checkbox" 
+                                id="permiso_<%= permiso.id %>" 
+                                name="permisos" 
+                                value="<%= permiso.id %>" 
+                                <% if (rolPermisosMap[permiso.id]) { %>checked<% } %>
+                            >
+                            <label for="permiso_<%= permiso.id %>">
+                                <strong><%= permiso.nombre %></strong>
+                                <span class="text-muted"><%= permiso.descripcion %></span>
+                            </label>
+                        </div>
+                    <% }); %>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                <a href="/roles" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
