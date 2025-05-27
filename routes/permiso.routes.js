@@ -24,7 +24,11 @@ router.delete(
 
 // ========== VIEW ROUTES (HTML) ==========
 router.get("/", permisosController.showPermisosList); // Lista de permisos
-router.get("/new", permisosController.showCreateForm); // Formulario de creación
+router.get(
+  "/new",
+  checkPermiso("gestionar_permisos"),
+  permisosController.showCreateForm
+); // Formulario de creación
 router.get(
   "/:id/edit",
   checkPermiso("gestionar_permisos"),
@@ -32,7 +36,11 @@ router.get(
 ); // Formulario de edición
 
 // ========== ACTION ROUTES (POST) ==========
-router.post("/", permisosController.handleCreate); // Procesar creación
+router.post(
+  "/",
+  checkPermiso("gestionar_permisos"),
+  permisosController.handleCreate
+); // Procesar creación
 router.post(
   "/:id/edit",
   checkPermiso("gestionar_permisos"),

@@ -110,7 +110,9 @@ const rolesController = {
 
       for (let i = 0; i < roles.length; i++) {
         const usuarios = await RolService.getUsersByRolId(roles[i].id);
+        const permisos = await PermisoService.getByRolId(roles[i].id);
         roles[i].usuarios_count = usuarios.length;
+        roles[i].permisos_count = permisos.length;
       }
       res.render("roles/index", {
         roles,

@@ -27,6 +27,7 @@
                             <th>ID</th>
                             <th>Nombre</th>
                             <th>Usuarios</th>
+                            <th>Permisos</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -44,6 +45,13 @@
                                         <%= rol.usuarios_count %> usuario(s)
                                             <% } else { %>
                                                 0 usuarios
+                                                <% } %>
+                                </td>
+                                <td>
+                                    <% if (rol.permisos_count) { %>
+                                        <%= rol.permisos_count %> permiso(s)
+                                            <% } else { %>
+                                                0 permisos
                                                 <% } %>
                                 </td>
                                 <td class="actions">
