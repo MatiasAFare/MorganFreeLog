@@ -178,6 +178,31 @@ const userController = {
       });
     }
   },
+  showDetails: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const user = await UserService.getUserWithRole(id);
+
+      if (!user) {
+        return res.render("error", { message: "Usuario no encontrado" });
+      }
+
+      const permisos = user.rol_id
+        ? await PermisoService.getByRolId(user.rol_id)
+        : [];
+
+      // Fix the path if your template is in a different location
+      res.render("usuarios/details", {  // Changed from "users/details" to "usuarios/details"
+        user,
+        permisos,
+      });
+    } catch (error) {
+      res.render("error", {
+        message: "Error al cargar detalles del usuario",
+        error: error.message,
+      });
+    }
+  },
 
   // ========== HANDLE METHODS (Actions) ==========
   handleCreate: async (req, res) => {

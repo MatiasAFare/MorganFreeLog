@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Detalles de usuario</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+    <h1>Detalles de usuario</h1>
+
+    <div class="user-details">
+        <h2>
+            <%= user.name %>
+        </h2>
+        <p>Email: <%= user.email %>
+        </p>
+        <p>Role: <%= user.rol_nombre || "Sin rol asignado" %>
+        </p>
+
+        <% if (permisos.length> 0) { %>
+            <h3>Permisos:</h3>
+            <ul>
+                <% permisos.forEach(function(permiso) { %>
+                    <li>
+                        <%= permiso.nombre %>
+                    </li>
+                    <% }); %>
+            </ul>
+            <% } else { %>
+                <p>Sin permisos asignados</p>
+                <% } %>
+
+                    <div class="actions">
+                        <a href="/usuarios/<%= user.id %>/edit" class="btn">Editar usuario</a>
+                        <form action="/usuarios/<%= user.id %>/delete" method="POST" style="display: inline;">
+                            <button type="submit" class="btn btn-danger"
+                                onclick="return confirm('Esta seguro que quiere borrar este usuario?')">Borrar</button>
+                        </form>
+                        <a href="/usuarios" class="btn">Back to Users</a>
+                    </div>
+    </div>
+</body>
+
+</html>
