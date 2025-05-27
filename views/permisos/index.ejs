@@ -2,53 +2,47 @@
 <html>
 
 <head>
-    <title>Editar Rol</title>
+    <title>Lista de Permisos</title>
     <link rel="stylesheet" href="/css/style.css">
 </head>
 
 <body>
     <div class="container">
-        <h1>Editar Rol</h1>
+        <h1>Lista de Permisos</h1>
 
         <% if (error) { %>
             <div class="alert alert-danger">
                 <%= error %>
             </div>
-            <% } %>
+        <% } %>
 
-                <form action="/roles/<%= rol.id %>/edit" method="POST">
-                    <div class="form-group">
-                        <label for="nombre">Nombre:</label>
-                        <input type="text" id="nombre" name="nombre" class="form-control" value="<%= rol.nombre %>"
-                            required>
-                    </div>
+        <div class="actions">
+            <a href="/permisos/new" class="btn btn-primary">Nuevo Permiso</a>
+            <a href="/" class="btn btn-secondary">Volver al Inicio</a>
+        </div>
 
-                    <!-- Sección de asignación de permisos con checkboxes -->
-                    <div class="form-group">
-                        <h3>Permisos Asignados</h3>
-                        <div class="permisos-container">
-                            <% allPermisos.forEach(permiso=> { %>
-                                <div class="permiso-check">
-                                    <input type="checkbox" id="permiso-<%= permiso.id %>" name="permisos"
-                                        value="<%= permiso.id %>" <%=rolPermisosMap[permiso.id] ? 'checked' : '' %>>
-                                    <label for="permiso-<%= permiso.id %>">
-                                        <strong>
-                                            <%= permiso.nombre %>
-                                        </strong>
-                                        <span class="text-muted">
-                                            <%= permiso.descripcion %>
-                                        </span>
-                                    </label>
-                                </div>
-                                <% }); %>
-                        </div>
-                    </div>
-
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                        <a href="/roles" class="btn btn-secondary">Cancelar</a>
-                    </div>
-                </form>
+        <table class="table">
+            <thead>
+                <tr>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% permisos.forEach(permiso => { %>
+                <tr>
+                    <td><%= permiso.nombre %></td>
+                    <td><%= permiso.descripcion %></td>
+                    <td>
+                    <a href="/permisos/<%= permiso.id %>/edit" class="btn btn-sm btn-warning">Editar</a>
+                    <a href="/permisos/<%= permiso.id %>/delete" class="btn btn-sm btn-danger">Eliminar</a>
+                    </td>
+                </tr>
+                <% }); %>
+            </tbody>
+        </table>
+        
     </div>
 </body>
 

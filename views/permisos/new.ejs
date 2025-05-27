@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Nuevo Permiso</title>
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+
+  <body>
+    <div class="container">
+      <h1>Nuevo Permiso</h1>
+
+      <% if (error) { %>
+      <div class="alert alert-danger"><%= error %></div>
+      <% } %>
+
+      <form action="/permisos" method="POST">
+        <div class="form-group">
+          <label for="nombre">Nombre:</label>
+          <input type="text" id="nombre" name="nombre" required />
+        </div>
+
+        <div class="form-group">
+          <label for="descripcion">Descripción:</label>
+          <textarea id="descripcion" name="descripcion" rows="4"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Asignar a Roles:</label>
+          <div class="checkbox-group">
+            <% roles.forEach(rol => { %>
+              <div class="checkbox-item">
+                <input type="checkbox" id="rol_<%= rol.id %>" name="roles" value="<%= rol.id %>" />
+                <label for="rol_<%= rol.id %>"><%= rol.nombre %></label>
+              </div>
+            <% }); %>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <button type="submit" class="btn btn-primary">Crear Permiso</button>
+          <a href="/permisos" class="btn btn-secondary">Cancelar</a>
+        </div>
+      </form>
+    </div>
+  </body>
+</html>

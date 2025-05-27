@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Lista de Permisos por rol: <%= rol.nombre %></title>
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+
+  <body>
+    <div class="container">
+      <h1>Lista de Permisos por rol: <%= rol.nombre %></h1>
+
+      <% if (error) { %>
+        <div class="alert alert-danger">
+            <%= error %>
+        </div>
+        <% } %>
+
+        <div class="actions">
+            <a href="/roles" class="btn btn-secondary">Volver</a>
+        </div>
+
+        <table class="table">
+            <thead>
+                <tr>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (permisos.length === 0) { %>
+                <tr>
+                  <td colspan="3">No hay permisos asignados a este rol</td>
+                </tr>
+                <% } else { %>
+                  <% permisos.forEach(permiso => { %>
+                  <tr>
+                    <td><%= permiso.nombre %></td>
+                    <td><%= permiso.descripcion %></td>
+                    <td>
+                    <a href="/permisos/<%= rol.id %>/edit" class="btn btn-sm btn-warning">Editar</a>
+                    <a href="/permisos/<%= rol.id %>/delete" class="btn btn-sm btn-danger">Eliminar</a>
+                    </td>
+                  </tr>
+                  <% }); %>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+  </body>
+</html>
