@@ -166,8 +166,8 @@ const userController = {
 
       const roles = await RolService.getAll();
 
-      res.render("users/edit", {
-        user,
+      res.render("usuarios/edit", {
+        usuario: user,
         roles,
         error: null,
       });
@@ -192,7 +192,8 @@ const userController = {
         : [];
 
       // Fix the path if your template is in a different location
-      res.render("usuarios/details", {  // Changed from "users/details" to "usuarios/details"
+      res.render("usuarios/details", {
+        // Changed from "users/details" to "usuarios/details"
         user,
         permisos,
       });

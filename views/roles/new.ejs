@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Crear Nuevo Rol</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div class="container">
+    <h1>Crear Nuevo Rol</h1>
+
+    <% if (error) { %>
+      <div class="alert alert-danger">
+        <%= error %>
+      </div>
+    <% } %>
+
+    <form action="/roles" method="POST">
+      <div class="form-group">
+        <label for="nombre">Nombre del Rol:</label>
+        <input type="text" id="nombre" name="nombre" class="form-control" required>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-success">Guardar Rol</button>
+        <a href="/roles" class="btn btn-secondary">Cancelar</a>
+      </div>
+    </form>
+  </div>
+</body>
+
+</html>
