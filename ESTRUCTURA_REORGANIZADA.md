@@ -1,9 +1,5 @@
 # Estructura de Controladores y Rutas - MorganFreeLog
 
-## Patrón de Arquitectura Implementado
-
-Basándome en tu `auth.controller.js`, he reacomodado toda la lógica siguiendo un patrón consistente de separación de responsabilidades:
-
 ### 🎯 Patrón de Controladores
 
 Cada controlador se organiza en **3 secciones claramente definidas**:
