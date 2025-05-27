@@ -52,4 +52,6 @@ router.post(
   permisosController.handleDelete
 ); // Eliminar permiso
 
+
+
 module.exports = router;

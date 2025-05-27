@@ -14,35 +14,46 @@
             <div class="alert alert-danger">
                 <%= error %>
             </div>
-        <% } %>
+            <% } %>
 
-        <div class="actions">
-            <a href="/permisos/new" class="btn btn-primary">Nuevo Permiso</a>
-            <a href="/" class="btn btn-secondary">Volver al Inicio</a>
-        </div>
+                <div class="actions">
+                    <a href="/permisos/new" class="btn btn-primary">Nuevo Permiso</a>
+                    <a href="/" class="btn btn-secondary">Volver al Inicio</a>
+                </div>
 
-        <table class="table">
-            <thead>
-                <tr>
-                <th>Nombre</th>
-                <th>Descripción</th>
-                <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                <% permisos.forEach(permiso => { %>
-                <tr>
-                    <td><%= permiso.nombre %></td>
-                    <td><%= permiso.descripcion %></td>
-                    <td>
-                    <a href="/permisos/<%= permiso.id %>/edit" class="btn btn-sm btn-warning">Editar</a>
-                    <a href="/permisos/<%= permiso.id %>/delete" class="btn btn-sm btn-danger">Eliminar</a>
-                    </td>
-                </tr>
-                <% }); %>
-            </tbody>
-        </table>
-        
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Descripción</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% permisos.forEach(permiso=> { %>
+                            <tr>
+                                <td>
+                                    <%= permiso.nombre %>
+                                </td>
+                                <td>
+                                    <%= permiso.descripcion %>
+                                </td>
+                                <td>
+                                    <a href="/permisos/<%= permiso.id %>/edit" class="btn btn-sm btn-warning">Editar</a>
+                                    <!-- Change to a form with POST method -->
+                                    <form action="/permisos/<%= permiso.id %>/delete" method="POST"
+                                        style="display:inline;">
+                                        <button type="submit" class="btn btn-sm btn-danger"
+                                            onclick="return confirm('¿Está seguro que desea eliminar este permiso?')">
+                                            Eliminar
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            <% }); %>
+                    </tbody>
+                </table>
+
     </div>
 </body>
 
