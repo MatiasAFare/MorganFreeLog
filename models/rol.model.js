@@ -1,13 +1,5 @@
 const db = require("../database");
 
-const createTable = db.prepare(`
-    CREATE TABLE IF NOT EXISTS roles (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        nombre TEXT UNIQUE NOT NULL
-    )
-`);
-createTable.run();
-
 const insertDefaultRoles = () => {
   const roles = ["administrador", "usuario"];
   const stmt = db.prepare("INSERT OR IGNORE INTO roles (nombre) VALUES (?)");

@@ -1,8 +1,7 @@
 const PermisoService = require('../services/permiso.service');
 
-
 const permisosController = {
-
+    // ========== API METHODS (JSON) ==========
     getPermisos: async (req, res) => {
         try {
             const permisos = await PermisoService.getAll();
@@ -79,6 +78,7 @@ const permisosController = {
         }
     },
 
+    // ========== SHOW METHODS (Views) ==========
     showPermisosList: async (req, res) => {
         try {
             const permisos = await PermisoService.getAll();
@@ -98,6 +98,25 @@ const permisosController = {
         res.render('permisos/new', { error: null });
     },
 
+    showEditForm: async (req, res) => {
+        try {
+            const { id } = req.params;
+            const permiso = await PermisoService.getById(id);
+
+            if (!permiso) {
+                return res.render('error', { message: 'Permiso no encontrado' });
+            }
+
+            res.render('permisos/edit', { permiso, error: null });
+        } catch (error) {
+            res.render('error', {
+                message: 'Error al cargar el permiso',
+                error: error.message
+            });
+        }
+    },
+
+    // ========== HANDLE METHODS (Actions) ==========
     handleCreate: async (req, res) => {
         try {
             const { nombre, descripcion } = req.body;
@@ -114,24 +133,6 @@ const permisosController = {
             res.render('permisos/new', {
                 error: error.message,
                 permiso: req.body
-            });
-        }
-    },
-
-    showEditForm: async (req, res) => {
-        try {
-            const { id } = req.params;
-            const permiso = await PermisoService.getById(id);
-
-            if (!permiso) {
-                return res.render('error', { message: 'Permiso no encontrado' });
-            }
-
-            res.render('permisos/edit', { permiso, error: null });
-        } catch (error) {
-            res.render('error', {
-                message: 'Error al cargar el permiso',
-                error: error.message
             });
         }
     },

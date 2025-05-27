@@ -1,25 +1,5 @@
 const db = require("../database");
 
-const createTable = db.prepare(`
-    CREATE TABLE IF NOT EXISTS permisos (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        nombre TEXT UNIQUE NOT NULL,
-        descripcion TEXT NOT NULL
-    )
-`);
-createTable.run();
-
-const createRolPermisoTable = db.prepare(`
-    CREATE TABLE IF NOT EXISTS rol_permiso (
-        rol_id INTEGER,
-        permiso_id INTEGER,
-        PRIMARY KEY (rol_id, permiso_id),
-        FOREIGN KEY (rol_id) REFERENCES roles(id) ON DELETE CASCADE,
-        FOREIGN KEY (permiso_id) REFERENCES permisos(id) ON DELETE CASCADE
-    )
-`);
-createRolPermisoTable.run();
-
 const PermisoModel = {
   getById: (id) => {
     const stmt = db.prepare("SELECT * FROM permisos WHERE id = ?");

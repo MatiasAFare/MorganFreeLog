@@ -2,6 +2,7 @@ const RolService = require('../services/rol.service');
 const PermisoService = require('../services/permiso.service');
 
 const rolesController = {
+    // ========== API METHODS (JSON) ==========
     getRoles: async (req, res) => {
         try {
             const roles = await RolService.getAll();
@@ -91,6 +92,7 @@ const rolesController = {
         }
     },
 
+    // ========== SHOW METHODS (Views) ==========
     showRolesList: async (req, res) => {
         try {
             const roles = await RolService.getAll();
@@ -108,26 +110,6 @@ const rolesController = {
 
     showCreateForm: async (req, res) => {
         res.render('roles/new', { error: null });
-    },
-
-    handleCreate: async (req, res) => {
-        try {
-            const { nombre } = req.body;
-            if (!nombre) {
-                return res.render('roles/new', {
-                    error: 'El nombre es requerido',
-                    rol: { nombre }
-                });
-            }
-
-            await RolService.create(nombre);
-            res.redirect('/roles');
-        } catch (error) {
-            res.render('roles/new', {
-                error: error.message,
-                rol: req.body
-            });
-        }
     },
 
     showEditForm: async (req, res) => {
@@ -161,6 +143,52 @@ const rolesController = {
         }
     },
 
+    showDetails: async (req, res) => {
+        try {
+            const { id } = req.params;
+            const rol = await RolService.getById(id);
+
+            if (!rol) {
+                return res.render('error', { message: 'Rol no encontrado' });
+            }
+
+            const permisos = await PermisoService.getByRolId(id);
+            const usuarios = await RolService.getUsersByRolId(id);
+
+            res.render('roles/details', {
+                rol,
+                permisos,
+                usuarios
+            });
+        } catch (error) {
+            res.render('error', {
+                message: 'Error al cargar detalles del rol',
+                error: error.message
+            });
+        }
+    },
+
+    // ========== HANDLE METHODS (Actions) ==========
+    handleCreate: async (req, res) => {
+        try {
+            const { nombre } = req.body;
+            if (!nombre) {
+                return res.render('roles/new', {
+                    error: 'El nombre es requerido',
+                    rol: { nombre }
+                });
+            }
+
+            await RolService.create(nombre);
+            res.redirect('/roles');
+        } catch (error) {
+            res.render('roles/new', {
+                error: error.message,
+                rol: req.body
+            });
+        }
+    },
+
     handleUpdate: async (req, res) => {
         try {
             const { id } = req.params;
@@ -185,38 +213,12 @@ const rolesController = {
             }
 
             await RolService.update(id, nombre);
-
             await PermisoService.updateRolPermisos(id, permisos || []);
 
             res.redirect('/roles');
         } catch (error) {
             res.render('error', {
                 message: 'Error al actualizar rol',
-                error: error.message
-            });
-        }
-    },
-
-    showDetails: async (req, res) => {
-        try {
-            const { id } = req.params;
-            const rol = await RolService.getById(id);
-
-            if (!rol) {
-                return res.render('error', { message: 'Rol no encontrado' });
-            }
-
-            const permisos = await PermisoService.getByRolId(id);
-            const usuarios = await RolService.getUsersByRolId(id);
-
-            res.render('roles/details', {
-                rol,
-                permisos,
-                usuarios
-            });
-        } catch (error) {
-            res.render('error', {
-                message: 'Error al cargar detalles del rol',
                 error: error.message
             });
         }

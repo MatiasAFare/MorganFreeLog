@@ -1,15 +1,5 @@
 const db = require("../database");
 
-const createTable = db.prepare(`
-    CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
-        email TEXT NOT NULL UNIQUE
-    )
-`);
-
-createTable.run();
-
 const UserModel = {
   getUserById: (id) => {
     const stmt = db.prepare("SELECT * FROM users WHERE id = ?");
@@ -19,9 +9,11 @@ const UserModel = {
     const stmt = db.prepare("SELECT * FROM users");
     return stmt.all();
   },
-  createUser: (name, email) => {
-    const stmt = db.prepare("INSERT INTO users (name, email) VALUES (?, ?)");
-    return stmt.run(name, email);
+  createUser: (name, email, password, rol_id) => {
+    const stmt = db.prepare(
+      "INSERT INTO users (name, email, password, rol_id) VALUES (?, ?, ?, ?)"
+    );
+    return stmt.run(name, email, password, rol_id);
   },
   updateUser: (id, name, email) => {
     const stmt = db.prepare(
@@ -41,6 +33,11 @@ const UserModel = {
             WHERE u.id = ?
         `);
     return stmt.get(id);
+  },
+
+  getUserByEmail: (email) => {
+    const stmt = db.prepare("SELECT * FROM users WHERE email = ?");
+    return stmt.get(email);
   },
 };
 
