@@ -17,7 +17,7 @@ const UserService = {
     return UserModel.createUser(name, email, password, rol_id);
   },
 
-  updateUser: async (id, name, email, rol_id = null) => {
+  updateUser: async (id, name, email, rol_id) => {
     return UserModel.updateUser(id, name, email, rol_id);
   },
 

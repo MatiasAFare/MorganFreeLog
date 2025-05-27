@@ -238,11 +238,11 @@ const userController = {
 
       if (!name || !email) {
         const roles = await RolService.getAll();
-        const user = await UserService.getUserById(id);
+        const usuario = await UserService.getUserById(id);
 
         return res.render("users/edit", {
           error: "El nombre y el email son requeridos",
-          user: { ...user, name, email, rol_id },
+          usuario: { ...usuario, name, email, rol_id },
           roles,
         });
       }
@@ -251,11 +251,11 @@ const userController = {
       res.redirect("/usuarios");
     } catch (error) {
       const roles = await RolService.getAll();
-      const user = { id: req.params.id, ...req.body };
+      const usuario = { id: req.params.id, ...req.body };
 
-      res.render("users/edit", {
+      res.render("usuarios/edit", {
         error: error.message,
-        user,
+        usuario,
         roles,
       });
     }

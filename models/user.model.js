@@ -15,11 +15,11 @@ const UserModel = {
     );
     return stmt.run(name, email, password, rol_id);
   },
-  updateUser: (id, name, email) => {
+  updateUser: (id, name, email, rol_id) => {
     const stmt = db.prepare(
-      "UPDATE users SET name = ?, email = ? WHERE id = ?"
+      "UPDATE users SET name = ?, email = ?, rol_id= ? WHERE id = ?"
     );
-    return stmt.run(name, email, id);
+    return stmt.run(name, email, rol_id, id);
   },
   deleteUser: (id) => {
     const stmt = db.prepare("DELETE FROM users WHERE id = ?");
