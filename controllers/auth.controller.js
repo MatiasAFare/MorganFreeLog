@@ -11,22 +11,38 @@ const authController = {
     try {
       const { email, password } = req.body;
       if (!email || !password) {
-        return res
-          .status(403)
-          .json({ message: "Email and password are required" });
+        return res.render("auth/login", {
+          title: "Login",
+          error: "Email y contraseña son requeridos"
+        });
       }
 
       const user = await UserService.loginUser(email, password);
       if (!user) {
-        return res.status(401).json({ message: "Invalid credentials" });
+        return res.render("auth/login", {
+          title: "Login",
+          error: "Credenciales inválidas"
+        });
       }
 
       req.session.userId = user.id;
-      res.status(200).json({ message: "Login successful", userId: user.id });
+      req.session.user = {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        rol_id: user.rol_id
+      };
+      req.session.isLoggedIn = true;
+
+      req.session.save((err) => {
+        if (err) console.error("Session save error:", err);
+        return res.redirect("/");
+      });
     } catch (error) {
-      res
-        .status(500)
-        .json({ message: "Error logging in", error: error.message });
+      return res.render("auth/login", {
+        title: "Login",
+        error: "Error al iniciar sesión: " + error.message
+      });
     }
   },
   showRegisterForm: async (req, res) => {
@@ -71,14 +87,16 @@ const authController = {
   },
   handleLogout: (req, res) => {
     if (!req.session.userId) {
-      return res.status(401).json({ message: "User not logged in" });
+      return res.redirect('/auth/login');
     }
-
     req.session.destroy((err) => {
       if (err) {
-        return res.status(500).json({ message: "Error logging out" });
+        return res.status(500).render('error', {
+          message: 'Error al cerrar sesión',
+          error: err
+        });
       }
-      res.status(200).json({ message: "Logout successful" });
+      return res.redirect('/auth/login');
     });
   },
 };

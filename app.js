@@ -26,6 +26,12 @@ app.use(
   })
 );
 
+app.use((req, res, next) => {
+  res.locals.user = req.session.user || null;
+  res.locals.isLoggedIn = !!req.session.isLoggedIn;
+  next();
+});
+
 app.use("/usuarios", require("./routes/user.routes"));
 app.use("/roles", require("./routes/roles.routes"));
 app.use("/permisos", require("./routes/permiso.routes"));

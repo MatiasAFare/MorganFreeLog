@@ -403,6 +403,95 @@ textarea.form-control {
     text-decoration: underline;
 }
 
+/* Detalles de usuario */
+.user-details {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    padding: 25px;
+    margin-bottom: 30px;
+}
+
+.user-details h2 {
+    color: #2c3e50;
+    font-size: 24px;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.user-details p {
+    margin-bottom: 15px;
+    font-size: 16px;
+}
+
+.user-details h3 {
+    margin-top: 25px;
+    margin-bottom: 15px;
+    color: #34495e;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.user-details ul {
+    list-style-type: none;
+    padding-left: 5px;
+    margin-bottom: 25px;
+}
+
+.user-details li {
+    padding: 8px 5px;
+    border-bottom: 1px solid #f3f3f3;
+    font-size: 15px;
+}
+
+.user-details li:last-child {
+    border-bottom: none;
+}
+
+.user-details .actions {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #f3f3f3;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+
+/* Logout */
+
+.logout-form {
+    margin: 0;
+    padding: 0;
+    display: inline;
+}
+
+.link-button {
+    display: block;
+    padding: 12px 15px;
+    background-color: #3498db;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: inherit;
+    width: 100%;
+    text-align: left;
+}
+
+.link-button:hover {
+    background-color: #2980b9;
+    transform: translateY(-2px);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+}
+
+
+
 /* Responsive design */
 @media (max-width: 768px) {
 
@@ -430,5 +519,20 @@ textarea.form-control {
     td.actions .btn {
         display: inline-block;
         width: auto;
+    }
+
+    @media (max-width: 576px) {
+        .user-details {
+            padding: 15px;
+        }
+
+        .user-details .actions {
+            flex-direction: column;
+        }
+
+        .user-details .actions .btn,
+        .user-details .actions form {
+            width: 100%;
+        }
     }
 }
