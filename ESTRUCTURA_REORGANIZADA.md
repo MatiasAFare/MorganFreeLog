@@ -167,5 +167,3 @@ router.post('/:id/delete', middleware, controller.handleDelete); // Eliminar
 5. **Testing** por separado de cada tipo de método
 
 ---
-
-¡Tu estructura ahora es consistente, mantenible y escalable! 🎉
