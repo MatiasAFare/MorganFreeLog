@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Nuevo Permiso</title>
+    <link rel="stylesheet" href="/css/style.css" />
+</head>
+
+<body>
+    <div class="container">
+        <h1>Nuevo Permiso</h1>
+
+        <% if (error) { %>
+            <div class="alert alert-danger">
+                <%= error %>
+            </div>
+            <% } %>
+
+                <form action="/permisos/<%= permiso.id %>/edit" method="POST">
+                    <div class="form-group">
+                        <label for="nombre">Nombre:</label>
+                        <input type="text" id="nombre" value="<%= permiso.nombre %>" name="nombre" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="descripcion">Descripción:</label>
+                        <input id="descripcion" value="<%= permiso.descripcion %>" name="descripcion" rows="4"></input>
+                    </div>
+
+
+
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">Editar</button>
+                        <a href="/permisos" class="btn btn-secondary">Cancelar</a>
+                    </div>
+                </form>
+    </div>
+</body>
+
+</html>
