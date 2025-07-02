@@ -51,6 +51,18 @@ const initDb = () => {
   ).run();
 };
 
+db.prepare(
+  `
+    CREATE TABLE IF NOT EXISTS items (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      price REAL NOT NULL,
+      stock INTEGER NOT NULL,
+      category TEXT NOT NULL
+    )
+  `
+).run();
+
 initDb();
 
 module.exports = db;

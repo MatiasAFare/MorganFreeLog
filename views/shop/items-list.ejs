@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Listado de Items</title>
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+
+  <body>
+    <div class="container">
+      <h1>Listado de Items</h1>
+
+      <% if (error) { %>
+      <div class="alert alert-danger"><%= error %></div>
+      <% } %>
+
+      <div class="actions">
+        <a href="/shop/new" class="btn btn-primary">Nuevo Item</a>
+        <a href="/" class="btn btn-secondary">Volver al Inicio</a>
+      </div>
+
+      <table class="table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Precio</th>
+            <th>Stock</th>
+            <th>Categoría</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% items.forEach(item => { %>
+          <tr>
+            <td><%= item.id %></td>
+            <td><%= item.name %></td>
+            <td><%= item.price %></td>
+            <td><%= item.stock %></td>
+            <td><%= item.category || 'Sin categoría' %></td>
+            <td class="actions">
+              <a href="/shop/<%= item.id %>" class="btn btn-sm btn-info">Ver</a>
+              <a href="/shop/<%= item.id %>/edit" class="btn btn-sm btn-warning"
+                >Editar</a
+              >
+              <form
+                action="/shop/<%= item.id %>/delete"
+                method="POST"
+                style="display: inline"
+              >
+                <button
+                  type="submit"
+                  class="btn btn-sm btn-danger"
+                  onclick="return confirm('¿Está seguro que desea eliminar este item?')"
+                >
+                  Eliminar
+                </button>
+              </form>
+            </td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+      <% if (items.length === 0) { %>
+      <p>No hay items disponibles.</p>
+      <% } %>
+    </div>
+  </body>
+</html>
