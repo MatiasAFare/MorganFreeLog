@@ -15,15 +15,19 @@ const shopController = {
   },
   getItemById: async (req, res) => {
     // Lógica para obtener un item por ID
+    //Lucas
   },
   createItem: async (req, res) => {
     // Lógica para crear un nuevo item
+    //Lazaro
   },
   updateItem: async (req, res) => {
     // Lógica para actualizar un item
+    //Mati
   },
   deleteItem: async (req, res) => {
     // Lógica para eliminar un item
+    //Lucas
   },
 
   // ========== SHOW METHODS (Views) ==========
@@ -48,23 +52,29 @@ const shopController = {
   },
   showCreateForm: (req, res) => {
     // Lógica para mostrar el formulario de creación de un nuevo item
+    //Lazaro
   },
   showDetails: (req, res) => {
     // Lógica para mostrar los detalles de un item
+    //Mati
   },
   showEditForm: (req, res) => {
     // Lógica para mostrar el formulario de edición de un item
+    //Lucas
   },
 
   // ========== HANDLE METHODS (Actions) ==========
   handleCreate: async (req, res) => {
     // Lógica para procesar la creación de un nuevo item
+    //Lazaro
   },
   handleUpdate: async (req, res) => {
     // Lógica para procesar la actualización de un item
+    //Matixxxxxxxxxxxx
   },
   handleDelete: async (req, res) => {
     // Lógica para procesar la eliminación de un item
+    //Lucas
   },
 };
 

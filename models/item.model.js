@@ -30,12 +30,16 @@ const itemModel = {
   getById: async () => {},
   //Filtros de búsqueda: Stock, Categoría, Nombre, Precio
   //Ordenación: Nombre, Precio, Stock
+  //Lucas
   getAll: async () => {
     const stmt = db.prepare("SELECT * FROM items");
     return stmt.all();
   },
+  //Lazaro
   create: async () => {},
+  //Mati
   update: async () => {},
+  //Lucas
   delete: async () => {},
 };
 

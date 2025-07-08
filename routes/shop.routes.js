@@ -3,6 +3,7 @@ const router = express.Router();
 const shopController = require('../controllers/shop.controller');
 const checkPermiso = require('../middleware/checkPermiso.middleware');
 
+//VALIDAR SI FALTAN RUTAS, LUCAS, LAZARO Y MATIAS, SI FALTAN AGREGARLAS UWU
 
 // ========== API ROUTES (JSON) ==========
 router.get('/shop', shopController.getAllItems); // Obtener todos los items
