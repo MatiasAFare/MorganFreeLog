@@ -74,7 +74,7 @@ const shopController = {
   },
   handleDelete: async (req, res) => {
     // Lógica para procesar la eliminación de un item
-    //Lucas
+    //LucasAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
   },
 };
 
