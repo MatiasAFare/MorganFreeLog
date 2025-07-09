@@ -88,80 +88,85 @@
         <a href="/shop" class="btn btn-secondary">Limpiar Filtros</a>
       </div>
 
-      <form id="filterForm" method="GET" action="/shop">
-        <table class="table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>
-                <a href="javascript:void(0)" onclick="sortBy('name')" style="text-decoration: none; color: inherit;">
-                  Nombre <span id="sort-name">↕</span>
-                </a>
-              </th>
-              <th>
-                <a href="javascript:void(0)" onclick="sortBy('price')" style="text-decoration: none; color: inherit;">
-                  Precio <span id="sort-price">↕</span>
-                </a>
-              </th>
-              <th>
-                <a href="javascript:void(0)" onclick="sortBy('stock')" style="text-decoration: none; color: inherit;">
-                  Stock <span id="sort-stock">↕</span>
-                </a>
-              </th>
-              <th>Categoría</th>
-              <th>Acciones</th>
-            </tr>
-            <tr class="filter-row">
-              <td></td>
-              <td>
-                <input 
-                  type="text" 
-                  name="name" 
-                  placeholder="🔍 Buscar nombre..." 
-                  value="<%= typeof name !== 'undefined' ? name : '' %>"
-                  style="width: 100%; padding: 4px; border: 1px solid #ccc; border-radius: 3px;"
-                  onchange="submitFilters()"
-                />
-              </td>
-              <td>
-                <input 
-                  type="number" 
-                  name="price" 
-                  placeholder="≤ Precio máx" 
-                  value="<%= typeof price !== 'undefined' ? price : '' %>"
-                  style="width: 100%; padding: 4px; border: 1px solid #ccc; border-radius: 3px;"
-                  onchange="submitFilters()"
-                />
-              </td>
-              <td>
-                <input 
-                  type="number" 
-                  name="stock" 
-                  placeholder="≥ Stock mín" 
-                  value="<%= typeof stock !== 'undefined' ? stock : '' %>"
-                  style="width: 100%; padding: 4px; border: 1px solid #ccc; border-radius: 3px;"
-                  onchange="submitFilters()"
-                />
-              </td>
-              <td>
-                <select 
-                  name="category" 
-                  style="width: 100%; padding: 4px; border: 1px solid #ccc; border-radius: 3px;"
-                  onchange="submitFilters()"
-                >
-                  <option value="">Todas</option>
-                  <option value="Category A" <%= typeof category !== 'undefined' && category === 'Category A' ? 'selected' : '' %>>Category A</option>
-                  <option value="Category B" <%= typeof category !== 'undefined' && category === 'Category B' ? 'selected' : '' %>>Category B</option>
-                  <option value="Category C" <%= typeof category !== 'undefined' && category === 'Category C' ? 'selected' : '' %>>Category C</option>
-                </select>
-              </td>
-              <td></td>
-            </tr>
-          </thead>
-        </table>
-      </form>
-      
+      <!-- Filtros separados de la tabla -->
+      <div class="filters-section" style="background: #f8f9fa; padding: 15px; border-radius: 6px; margin-bottom: 20px; border: 1px solid #dee2e6;">
+        <h5 style="margin: 0 0 15px 0; color: #495057; font-size: 16px;">🔍 Filtros de búsqueda</h5>
+        <form id="filterForm" method="GET" action="/shop">
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 15px; align-items: end;">
+            <div>
+              <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #495057;">Nombre:</label>
+              <input 
+                type="text" 
+                name="name" 
+                placeholder="Buscar por nombre..." 
+                value="<%= typeof name !== 'undefined' ? name : '' %>"
+                style="width: 100%; padding: 8px 12px; border: 1px solid #ced4da; border-radius: 4px; font-size: 14px;"
+                onchange="submitFilters()"
+              />
+            </div>
+            <div>
+              <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #495057;">Precio máximo:</label>
+              <input 
+                type="number" 
+                name="price" 
+                placeholder="Ej: 100" 
+                value="<%= typeof price !== 'undefined' ? price : '' %>"
+                style="width: 100%; padding: 8px 12px; border: 1px solid #ced4da; border-radius: 4px; font-size: 14px;"
+                onchange="submitFilters()"
+              />
+            </div>
+            <div>
+              <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #495057;">Stock mínimo:</label>
+              <input 
+                type="number" 
+                name="stock" 
+                placeholder="Ej: 10" 
+                value="<%= typeof stock !== 'undefined' ? stock : '' %>"
+                style="width: 100%; padding: 8px 12px; border: 1px solid #ced4da; border-radius: 4px; font-size: 14px;"
+                onchange="submitFilters()"
+              />
+            </div>
+            <div>
+              <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #495057;">Categoría:</label>
+              <select 
+                name="category" 
+                style="width: 100%; padding: 8px 12px; border: 1px solid #ced4da; border-radius: 4px; font-size: 14px;"
+                onchange="submitFilters()"
+              >
+                <option value="">Todas las categorías</option>
+                <option value="Category A" <%= typeof category !== 'undefined' && category === 'Category A' ? 'selected' : '' %>>Category A</option>
+                <option value="Category B" <%= typeof category !== 'undefined' && category === 'Category B' ? 'selected' : '' %>>Category B</option>
+                <option value="Category C" <%= typeof category !== 'undefined' && category === 'Category C' ? 'selected' : '' %>>Category C</option>
+              </select>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- Tabla unificada -->
       <table class="table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>
+              <a href="javascript:void(0)" onclick="sortBy('name')" style="text-decoration: none; color: inherit;">
+                Nombre <span id="sort-name">↕</span>
+              </a>
+            </th>
+            <th>
+              <a href="javascript:void(0)" onclick="sortBy('price')" style="text-decoration: none; color: inherit;">
+                Precio <span id="sort-price">↕</span>
+              </a>
+            </th>
+            <th>
+              <a href="javascript:void(0)" onclick="sortBy('stock')" style="text-decoration: none; color: inherit;">
+                Stock <span id="sort-stock">↕</span>
+              </a>
+            </th>
+            <th>Categoría</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
         <tbody>
           <% items.forEach(item => { %>
           <tr>
