@@ -6,10 +6,9 @@ const shopService = {
     // con los filtros de búsqueda y ordenación aplicados.
     return itemModel.getAll(filters);
   },
-  getItemById: async (id) => {
-    // Aquí se implementaría la lógica para obtener un item por su ID.
+  getItemById: (id) => {
     //Lucas
-    return null;
+    return itemModel.getById(id);
   },
   createItem: async (name, price, stock, category) => {
     // Aquí se implementaría la lógica para crear un nuevo item.
@@ -35,14 +34,38 @@ const shopService = {
       category,
     };
   },
-  deleteItem: async (id) => {
+  deleteItem: (id) => {
     // Aquí se implementaría la lógica para eliminar un item por su ID.
     // Debería verificar que el item existe y luego eliminarlo de la base de datos.
     //Lucas
-    return {
-      success: true,
-      message: `Item with ID ${id} deleted successfully.`,
-    };
+    const item = itemModel.getById(id);
+    if (!item) {
+      return {
+        success: false,
+        message: `Item with ID ${id} not found.`,
+      };
+    }
+
+    try {
+      const result = itemModel.delete(id);
+      if (result.changes > 0) {
+        return {
+          success: true,
+          message: `Item with ID ${id} deleted successfully.`,
+        };
+      } else {
+        return {
+          success: false,
+          message: `Item with ID ${id} not found.`,
+        };
+      }
+    } catch (error) {
+      console.error("Error deleting item:", error);
+      return {
+        success: false,
+        message: `Error deleting item with ID ${id}: ${error.message}`,
+      };
+    }
   },
 };
 module.exports = shopService;

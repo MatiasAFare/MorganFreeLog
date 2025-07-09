@@ -15,6 +15,17 @@ const shopController = {
   },
   getItemById: async (req, res) => {
     // Lógica para obtener un item por ID
+    try {
+      const itemId = req.params.id;
+      const item = await shopService.getItemById(itemId);
+      if (!item) {
+        return res.status(404).json({ message: "Item no encontrado" });
+      }
+      return item;
+    } catch (error) {
+      console.error("Error al obtener el item:", error);
+      res.status(500).json({ message: "Error al obtener el item" });
+    }
     //Lucas
   },
   createItem: async (req, res) => {
@@ -27,6 +38,18 @@ const shopController = {
   },
   deleteItem: async (req, res) => {
     // Lógica para eliminar un item
+    try {
+      const itemId = req.params.id;
+      const result = await shopService.deleteItem(itemId);
+      if (result.success) {
+        return res.status(200).json({ message: result.message });
+      } else {
+        return res.status(404).json({ message: "Item no encontrado" });
+      }
+    } catch (error) {
+      console.error("Error al eliminar el item:", error);
+      res.status(500).json({ message: "Error al eliminar el item" });
+    }
     //Lucas
   },
 
@@ -35,11 +58,20 @@ const shopController = {
     // Lógica para mostrar la lista de items
     try {
       // Aquí se llamaría al servicio para obtener los items
+      const filters = req.query;
       const items = await shopController.getAllItems(req, res);
       res.render("shop/items-list", {
         title: "Lista de Items",
         items: items,
         error: req.query.error,
+        success: req.query.success,
+        // Pasar los filtros actuales a la vista
+        name: filters.name || '',
+        price: filters.price || '',
+        stock: filters.stock || '',
+        category: filters.category || '',
+        orderBy: filters.orderBy || '',
+        sortDirection: filters.sortDirection || ''
       });
     } catch (error) {
       console.error("Error al obtener la lista de items:", error);
@@ -54,9 +86,21 @@ const shopController = {
     // Lógica para mostrar el formulario de creación de un nuevo item
     //Lazaro
   },
-  showDetails: (req, res) => {
+  showDetails: async (req, res) => {
     // Lógica para mostrar los detalles de un item
     //Mati
+    const item = await shopController.getItemById(req, res);
+    if (!item) {
+      return res.status(404).render("error", {
+        message: "Item no encontrado",
+      });
+    }
+    res.render("shop/item-details", {
+      title: "Detalles del Item",
+      item: item,
+      error: req.query.error,
+    });
+
   },
   showEditForm: (req, res) => {
     // Lógica para mostrar el formulario de edición de un item
@@ -75,6 +119,20 @@ const shopController = {
   handleDelete: async (req, res) => {
     // Lógica para procesar la eliminación de un item
     //Lucas
+    const itemId = req.params.id;
+    try {
+      const result = shopService.deleteItem(itemId);
+      if (result.success) {
+        // Redirigir con mensaje de éxito
+        return res.redirect('/shop?success=Item eliminado correctamente');
+      } else {
+        // Redirigir con mensaje de error
+        return res.redirect('/shop?error=Item no encontrado');
+      }
+    } catch (error) {
+      console.error("Error al eliminar el item:", error);
+      return res.redirect('/shop?error=Error al eliminar el item');
+    }
   },
 };
 

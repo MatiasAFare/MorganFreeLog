@@ -3,6 +3,71 @@
   <head>
     <title>Listado de Items</title>
     <link rel="stylesheet" href="/css/style.css" />
+    <style>
+      /* Estilos para alertas */
+      .alert {
+        padding: 12px 16px;
+        margin: 15px 0;
+        border-radius: 6px;
+        font-weight: 500;
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        animation: slideIn 0.3s ease-out;
+      }
+
+      .alert-success {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+        box-shadow: 0 2px 4px rgba(21, 87, 36, 0.1);
+      }
+
+      .alert-success::before {
+        content: "✅";
+        font-size: 16px;
+      }
+
+      .alert-danger {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+        box-shadow: 0 2px 4px rgba(114, 28, 36, 0.1);
+      }
+
+      .alert-danger::before {
+        content: "❌";
+        font-size: 16px;
+      }
+
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Auto-hide después de 5 segundos */
+      .alert.auto-hide {
+        animation: slideIn 0.3s ease-out, fadeOut 0.5s ease-in 4.5s forwards;
+      }
+
+      @keyframes fadeOut {
+        from {
+          opacity: 1;
+          transform: translateY(0);
+        }
+        to {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+      }
+    </style>
   </head>
 
   <body>
@@ -10,25 +75,93 @@
       <h1>Listado de Items</h1>
 
       <% if (error) { %>
-      <div class="alert alert-danger"><%= error %></div>
+      <div class="alert alert-danger auto-hide"><%= error %></div>
+      <% } %>
+
+      <% if (typeof success !== 'undefined' && success) { %>
+      <div class="alert alert-success auto-hide"><%= success %></div>
       <% } %>
 
       <div class="actions">
         <a href="/shop/new" class="btn btn-primary">Nuevo Item</a>
         <a href="/" class="btn btn-secondary">Volver al Inicio</a>
+        <a href="/shop" class="btn btn-secondary">Limpiar Filtros</a>
       </div>
 
+      <form id="filterForm" method="GET" action="/shop">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>
+                <a href="javascript:void(0)" onclick="sortBy('name')" style="text-decoration: none; color: inherit;">
+                  Nombre <span id="sort-name">↕</span>
+                </a>
+              </th>
+              <th>
+                <a href="javascript:void(0)" onclick="sortBy('price')" style="text-decoration: none; color: inherit;">
+                  Precio <span id="sort-price">↕</span>
+                </a>
+              </th>
+              <th>
+                <a href="javascript:void(0)" onclick="sortBy('stock')" style="text-decoration: none; color: inherit;">
+                  Stock <span id="sort-stock">↕</span>
+                </a>
+              </th>
+              <th>Categoría</th>
+              <th>Acciones</th>
+            </tr>
+            <tr class="filter-row">
+              <td></td>
+              <td>
+                <input 
+                  type="text" 
+                  name="name" 
+                  placeholder="🔍 Buscar nombre..." 
+                  value="<%= typeof name !== 'undefined' ? name : '' %>"
+                  style="width: 100%; padding: 4px; border: 1px solid #ccc; border-radius: 3px;"
+                  onchange="submitFilters()"
+                />
+              </td>
+              <td>
+                <input 
+                  type="number" 
+                  name="price" 
+                  placeholder="≤ Precio máx" 
+                  value="<%= typeof price !== 'undefined' ? price : '' %>"
+                  style="width: 100%; padding: 4px; border: 1px solid #ccc; border-radius: 3px;"
+                  onchange="submitFilters()"
+                />
+              </td>
+              <td>
+                <input 
+                  type="number" 
+                  name="stock" 
+                  placeholder="≥ Stock mín" 
+                  value="<%= typeof stock !== 'undefined' ? stock : '' %>"
+                  style="width: 100%; padding: 4px; border: 1px solid #ccc; border-radius: 3px;"
+                  onchange="submitFilters()"
+                />
+              </td>
+              <td>
+                <select 
+                  name="category" 
+                  style="width: 100%; padding: 4px; border: 1px solid #ccc; border-radius: 3px;"
+                  onchange="submitFilters()"
+                >
+                  <option value="">Todas</option>
+                  <option value="Category A" <%= typeof category !== 'undefined' && category === 'Category A' ? 'selected' : '' %>>Category A</option>
+                  <option value="Category B" <%= typeof category !== 'undefined' && category === 'Category B' ? 'selected' : '' %>>Category B</option>
+                  <option value="Category C" <%= typeof category !== 'undefined' && category === 'Category C' ? 'selected' : '' %>>Category C</option>
+                </select>
+              </td>
+              <td></td>
+            </tr>
+          </thead>
+        </table>
+      </form>
+      
       <table class="table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Nombre</th>
-            <th>Precio</th>
-            <th>Stock</th>
-            <th>Categoría</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
         <tbody>
           <% items.forEach(item => { %>
           <tr>
@@ -60,9 +193,74 @@
           <% }) %>
         </tbody>
       </table>
+      
       <% if (items.length === 0) { %>
       <p>No hay items disponibles.</p>
       <% } %>
     </div>
+
+    <script>
+      // Auto-submit del formulario cuando cambian los filtros
+      function submitFilters() {
+        document.getElementById('filterForm').submit();
+      }
+
+      // Función para ordenar
+      function sortBy(field) {
+        const form = document.getElementById('filterForm');
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentSort = urlParams.get('orderBy');
+        const currentDirection = urlParams.get('sortDirection') || 'ASC';
+        
+        // Crear input hidden para orderBy si no existe
+        let orderByInput = form.querySelector('input[name="orderBy"]');
+        if (!orderByInput) {
+          orderByInput = document.createElement('input');
+          orderByInput.type = 'hidden';
+          orderByInput.name = 'orderBy';
+          form.appendChild(orderByInput);
+        }
+        
+        // Crear input hidden para sortDirection si no existe
+        let sortDirectionInput = form.querySelector('input[name="sortDirection"]');
+        if (!sortDirectionInput) {
+          sortDirectionInput = document.createElement('input');
+          sortDirectionInput.type = 'hidden';
+          sortDirectionInput.name = 'sortDirection';
+          form.appendChild(sortDirectionInput);
+        }
+        
+        // Determinar la nueva dirección
+        let newDirection = 'ASC';
+        if (currentSort === field && currentDirection === 'ASC') {
+          newDirection = 'DESC';
+        }
+        
+        orderByInput.value = field;
+        sortDirectionInput.value = newDirection;
+        
+        // Actualizar indicadores visuales
+        document.querySelectorAll('[id^="sort-"]').forEach(span => {
+          span.textContent = '↕';
+        });
+        document.getElementById('sort-' + field).textContent = newDirection === 'ASC' ? '↑' : '↓';
+        
+        form.submit();
+      }
+
+      // Mostrar indicador de ordenación actual
+      window.onload = function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentSort = urlParams.get('orderBy');
+        const currentDirection = urlParams.get('sortDirection') || 'ASC';
+        
+        if (currentSort) {
+          const sortIndicator = document.getElementById('sort-' + currentSort);
+          if (sortIndicator) {
+            sortIndicator.textContent = currentDirection === 'ASC' ? '↑' : '↓';
+          }
+        }
+      };
+    </script>
   </body>
 </html>
