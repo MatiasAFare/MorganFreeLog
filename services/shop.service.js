@@ -12,16 +12,7 @@ const shopService = {
     return null;
   },
   createItem: async (name, price, stock, category) => {
-    // Aquí se implementaría la lógica para crear un nuevo item.
-    // Debería validar los datos y luego guardarlos en la base de datos.
-    //Lazaro
-    return {
-      id: "new-item-id", // Simulación de ID generado
-      name,
-      price,
-      stock,
-      category,
-    };
+    return itemModel.create(name, price, stock, category);
   },
   updateItem: async (id, name, price, stock, category) => {
     // Aquí se implementaría la lógica para actualizar un item existente.
