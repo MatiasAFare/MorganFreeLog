@@ -1,35 +1,34 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <title>Morgan Freelog</title>
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
 
-<head>
-  <title>Morgan Freelog</title>
-  <link rel="stylesheet" href="/css/style.css" />
-</head>
+  <body>
+    <div class="container">
+      <h1>Morgan Freelog</h1>
+      <p>Bienvenido al sistema de gestión de usuarios, roles y permisos.</p>
 
-<body>
-  <div class="container">
-    <h1>Morgan Freelog</h1>
-    <p>Bienvenido al sistema de gestión de usuarios, roles y permisos.</p>
-
-    <div class="menu">
-      <h2>Menú Principal</h2>
-      <ul>
-        <li><a href="/usuarios">Gestión de Usuarios</a></li>
-        <li><a href="/roles">Gestión de Roles</a></li>
-        <li><a href="/permisos">Gestión de Permisos</a></li>
-        <% if (locals.isLoggedIn) { %>
+      <div class="menu">
+        <h2>Menú Principal</h2>
+        <ul>
+          <li><a href="/usuarios">Gestión de Usuarios</a></li>
+          <li><a href="/roles">Gestión de Roles</a></li>
+          <li><a href="/permisos">Gestión de Permisos</a></li>
+          <li><a href="/shop">Tienda</a></li>
+          <% if (locals.isLoggedIn) { %>
           <li>
             <form action="/auth/logout" method="POST" class="logout-form">
               <button type="submit" class="link-button">Cerrar Sesión</button>
             </form>
           </li>
           <% } else { %>
-            <li><a href="/auth/login">Iniciar Sesión</a></li>
-            <li><a href="/auth/register">Registro de Usuario</a></li>
-            <% } %>
-      </ul>
+          <li><a href="/auth/login">Iniciar Sesión</a></li>
+          <li><a href="/auth/register">Registro de Usuario</a></li>
+          <% } %>
+        </ul>
+      </div>
     </div>
-  </div>
-</body>
-
+  </body>
 </html>

@@ -1,5 +1,5 @@
 const UserService = require("../services/user.service");
-const RoleService = require("../services/rol.service"); // Assuming roleService is defined and imported
+const RoleService = require("../services/rol.service");
 const authController = {
   showLoginForm: (req, res) => {
     if (req.session.userId) {

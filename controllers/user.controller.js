@@ -91,8 +91,6 @@ const userController = {
   showUsersList: async (req, res) => {
     try {
       const users = await UserService.getAllUsers();
-
-      // Obtener información de rol para cada usuario
       const usersWithRoles = await Promise.all(
         users.map(async (user) => {
           if (user.rol_id) {

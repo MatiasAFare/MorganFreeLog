@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Detalles del Item</title>
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Detalles del Item</h1>
+
+      <% if (error) { %>
+      <div class="alert alert-danger"><%= error %></div>
+      <% } else { %>
+      <div class="item-details">
+        <p><strong>ID:</strong> <%= item.id %></p>
+        <p><strong>Nombre:</strong> <%= item.name %></p>
+        <p><strong>Precio:</strong> $<%= item.price.toFixed(2) %></p>
+        <p><strong>Stock:</strong> <%= item.stock %></p>
+        <p>
+          <strong>Categoría:</strong> <%= item.category || 'Sin categoría' %>
+        </p>
+      </div>
+
+      <div class="actions">
+        <a href="/shop/<%= item.id %>/edit" class="btn btn-warning">Editar</a>
+        <form
+          action="/shop/<%= item.id %>/delete"
+          method="POST"
+          style="display: inline"
+        >
+          <button
+            type="submit"
+            class="btn btn-danger"
+            onclick="return confirm('¿Está seguro que desea eliminar este item?')"
+          >
+            Eliminar
+          </button>
+        </form>
+        <a href="/shop" class="btn btn-secondary">Volver al Listado</a>
+      </div>
+      <% } %>
+    </div>
+  </body>
+</html>
