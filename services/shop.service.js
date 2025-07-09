@@ -23,17 +23,34 @@ const shopService = {
       category,
     };
   },
-  updateItem: async (id, name, price, stock, category) => {
+  updateItem: async (id, itemData) => {
     // Aquí se implementaría la lógica para actualizar un item existente.
     // Debería validar los datos y luego actualizar el item en la base de datos.
-    //Matixxxxxxx
-    return {
-      id,
-      name,
-      price,
-      stock,
-      category,
-    };
+    try {
+      // Validar que el item existe
+      const existingItem = await itemModel.getById(id);
+      if (!existingItem) {
+        throw new Error('Item no encontrado');
+      }
+
+      // Validar datos requeridos
+      if (itemData.name && itemData.name.trim() === '') {
+        throw new Error('El nombre del item es requerido');
+      }
+      if (itemData.price && itemData.price < 0) {
+        throw new Error('El precio debe ser mayor o igual a 0');
+      }
+      if (itemData.stock && itemData.stock < 0) {
+        throw new Error('El stock debe ser mayor o igual a 0');
+      }
+
+      // Actualizar el item en la base de datos
+      const updatedItem = await itemModel.updateItem(id, itemData);
+      return updatedItem;
+    } catch (error) {
+      console.error('Error en updateItem service:', error);
+      throw error;
+    }
   },
   deleteItem: async (id) => {
     // Aquí se implementaría la lógica para eliminar un item por su ID.

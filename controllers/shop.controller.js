@@ -23,7 +23,27 @@ const shopController = {
   },
   updateItem: async (req, res) => {
     // Lógica para actualizar un item
-    //Mati
+    try {
+      const { id } = req.params;
+      const itemData = req.body;
+
+      const updatedItem = await shopService.updateItem(id, itemData);
+
+      if (!updatedItem) {
+        return res.status(404).json({ message: "Item no encontrado" });
+      }
+
+      res.status(200).json({
+        message: "Item actualizado exitosamente",
+        item: updatedItem
+      });
+    } catch (error) {
+      console.error("Error al actualizar el item:", error);
+      res.status(500).json({
+        message: "Error al actualizar el item",
+        error: error.message
+      });
+    }
   },
   deleteItem: async (req, res) => {
     // Lógica para eliminar un item
@@ -54,9 +74,30 @@ const shopController = {
     // Lógica para mostrar el formulario de creación de un nuevo item
     //Lazaro
   },
-  showDetails: (req, res) => {
+  showDetails: async (req, res) => {
     // Lógica para mostrar los detalles de un item
-    //Mati
+    try {
+      const { id } = req.params;
+      const item = await shopService.getItemById(id);
+
+      if (!item) {
+        return res.render("error", {
+          message: "Item no encontrado",
+          error: "El item solicitado no existe"
+        });
+      }
+
+      res.render("shop/details", {
+        title: "Detalles del Item",
+        item: item
+      });
+    } catch (error) {
+      console.error("Error al obtener detalles del item:", error);
+      res.render("error", {
+        message: "Error al cargar los detalles del item",
+        error: error.message
+      });
+    }
   },
   showEditForm: (req, res) => {
     // Lógica para mostrar el formulario de edición de un item
@@ -70,7 +111,27 @@ const shopController = {
   },
   handleUpdate: async (req, res) => {
     // Lógica para procesar la actualización de un item
-    //Matixxxxxxxxxxxx
+    try {
+      const { id } = req.params;
+      const itemData = req.body;
+
+      const updatedItem = await shopService.updateItem(id, itemData);
+
+      if (!updatedItem) {
+        return res.render("shop/edit", {
+          error: "Item no encontrado",
+          item: { id, ...itemData }
+        });
+      }
+
+      res.redirect(`/shop/${id}`);
+    } catch (error) {
+      console.error("Error al actualizar el item:", error);
+      res.render("shop/edit", {
+        error: "Error al actualizar el item: " + error.message,
+        item: { id: req.params.id, ...req.body }
+      });
+    }
   },
   handleDelete: async (req, res) => {
     // Lógica para procesar la eliminación de un item
