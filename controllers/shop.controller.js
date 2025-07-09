@@ -29,12 +29,47 @@ const shopController = {
 
   },
   createItem: async (req, res) => {
-    // Lógica para crear un nuevo item
-    //Lazaro
+    try {
+      const { name, price, stock, category } = req.body;
+
+      if (!name || !price) {
+        return res.status(400).json({ message: "Name and price are required" });
+      }
+
+      const result = await shopService.createItem(name, price, stock, category);
+      res.status(201).json({
+        message: "Item created successfully",
+        item: result,
+      });
+    } catch (error) {
+      res
+        .status(500)
+        .json({ message: "Error creating item", error: error.message });
+    }
   },
   updateItem: async (req, res) => {
     // Lógica para actualizar un item
-    //Mati
+    try {
+      const { id } = req.params;
+      const itemData = req.body;
+
+      const updatedItem = await shopService.updateItem(id, itemData);
+
+      if (!updatedItem) {
+        return res.status(404).json({ message: "Item no encontrado" });
+      }
+
+      res.status(200).json({
+        message: "Item actualizado exitosamente",
+        item: updatedItem
+      });
+    } catch (error) {
+      console.error("Error al actualizar el item:", error);
+      res.status(500).json({
+        message: "Error al actualizar el item",
+        error: error.message
+      });
+    }
   },
   deleteItem: async (req, res) => {
     // Lógica para eliminar un item
@@ -81,9 +116,8 @@ const shopController = {
       });
     }
   },
-  showCreateForm: (req, res) => {
-    // Lógica para mostrar el formulario de creación de un nuevo item
-    //Lazaro
+  showCreateForm: async (req, res) => {
+    res.render("shop/new", { error: null });
   },
   showDetails: async (req, res) => {
     // Lógica para mostrar los detalles de un item
@@ -108,12 +142,49 @@ const shopController = {
 
   // ========== HANDLE METHODS (Actions) ==========
   handleCreate: async (req, res) => {
-    // Lógica para procesar la creación de un nuevo item
-    //Lazaro
+    try {
+      const { name, price, stock, category } = req.body;
+
+      if (!name || !price) {
+        return res.render("shop/new", {
+          error: "El nombre y el precio son requeridos",
+          item: { name, price, stock, category },
+        });
+      }
+
+      await shopService.createItem(name, price, stock, category);
+      res.redirect("/shop");
+    } catch (error) {
+      res.render("shop/new", {
+        error: error.message,
+        item: req.body,
+      });
+    }
   },
+
   handleUpdate: async (req, res) => {
     // Lógica para procesar la actualización de un item
-    //Matixxxxxxxxxxxx
+    try {
+      const { id } = req.params;
+      const itemData = req.body;
+
+      const updatedItem = await shopService.updateItem(id, itemData);
+
+      if (!updatedItem) {
+        return res.render("shop/edit", {
+          error: "Item no encontrado",
+          item: { id, ...itemData }
+        });
+      }
+
+      res.redirect(`/shop/${id}`);
+    } catch (error) {
+      console.error("Error al actualizar el item:", error);
+      res.render("shop/edit", {
+        error: "Error al actualizar el item: " + error.message,
+        item: { id: req.params.id, ...req.body }
+      });
+    }
   },
   handleDelete: async (req, res) => {
     const itemId = req.params.id;

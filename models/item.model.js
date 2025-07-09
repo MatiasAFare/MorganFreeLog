@@ -81,8 +81,20 @@ const itemModel = {
 
     return stmt.all(params);
   },
-  //Lazaro
-  create: async () => {},
+  create: (name, price, stock, category) => {
+    try {
+      const stmt = db.prepare(
+        "INSERT INTO items (name, price, stock, category) VALUES (?, ?, ?, ?)"
+      );
+      const result = stmt.run(name, price, stock, category);
+      return { id: result.lastInsertRowid, name, price, stock, category };
+    } catch (error) {
+      if (error.code === "SQLITE_CONSTRAINT_UNIQUE") {
+        throw new Error("Ya existe un item con ese nombre");
+      }
+      throw error;
+    }
+  },
   //Mati
   update: async () => {},
   //Lucas
