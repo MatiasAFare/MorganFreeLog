@@ -7,7 +7,6 @@ const shopService = {
     return itemModel.getAll(filters);
   },
   getItemById: (id) => {
-    //Lucas
     return itemModel.getById(id);
   },
   createItem: async (name, price, stock, category) => {
@@ -35,9 +34,6 @@ const shopService = {
     };
   },
   deleteItem: (id) => {
-    // Aquí se implementaría la lógica para eliminar un item por su ID.
-    // Debería verificar que el item existe y luego eliminarlo de la base de datos.
-    //Lucas
     const item = itemModel.getById(id);
     if (!item) {
       return {

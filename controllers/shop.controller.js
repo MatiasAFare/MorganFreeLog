@@ -26,7 +26,7 @@ const shopController = {
       console.error("Error al obtener el item:", error);
       res.status(500).json({ message: "Error al obtener el item" });
     }
-    //Lucas
+
   },
   createItem: async (req, res) => {
     // Lógica para crear un nuevo item
@@ -50,7 +50,6 @@ const shopController = {
       console.error("Error al eliminar el item:", error);
       res.status(500).json({ message: "Error al eliminar el item" });
     }
-    //Lucas
   },
 
   // ========== SHOW METHODS (Views) ==========
@@ -117,8 +116,6 @@ const shopController = {
     //Matixxxxxxxxxxxx
   },
   handleDelete: async (req, res) => {
-    // Lógica para procesar la eliminación de un item
-    //Lucas
     const itemId = req.params.id;
     try {
       const result = shopService.deleteItem(itemId);
