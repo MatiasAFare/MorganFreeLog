@@ -29,7 +29,16 @@ initItems();
 const itemModel = {
   getById: (id) => {
     const stmt = db.prepare("SELECT * FROM items WHERE id = ?");
-    return stmt.get(id);
+    const item = stmt.get(id);
+    
+    if (!item) return null;
+    
+    // Asegurar que los tipos numéricos sean correctos
+    return {
+      ...item,
+      price: parseFloat(item.price),
+      stock: parseInt(item.stock)
+    };
   },
 
   getAll: (filters) => {
@@ -78,8 +87,14 @@ const itemModel = {
       query += " ORDER BY " + orderByClauses.join(", ");
     }
     const stmt = db.prepare(query);
-
-    return stmt.all(params);
+    const items = stmt.all(params);
+    
+    // Asegurar que los tipos numéricos sean correctos
+    return items.map(item => ({
+      ...item,
+      price: parseFloat(item.price),
+      stock: parseInt(item.stock)
+    }));
   },
   create: (name, price, stock, category) => {
     try {
@@ -95,9 +110,51 @@ const itemModel = {
       throw error;
     }
   },
-  //Mati
-  update: async () => {},
-  //Lucas
+  
+  updateItem: (id, itemData) => {
+    try {
+      // Construir la query dinámicamente basada en los campos presentes
+      const updates = [];
+      const params = [];
+      
+      if (itemData.name !== undefined) {
+        updates.push("name = ?");
+        params.push(itemData.name);
+      }
+      if (itemData.price !== undefined) {
+        updates.push("price = ?");
+        params.push(parseFloat(itemData.price));
+      }
+      if (itemData.stock !== undefined) {
+        updates.push("stock = ?");
+        params.push(parseInt(itemData.stock));
+      }
+      if (itemData.category !== undefined) {
+        updates.push("category = ?");
+        params.push(itemData.category);
+      }
+      
+      if (updates.length === 0) {
+        throw new Error("No hay datos para actualizar");
+      }
+      
+      params.push(id);
+      
+      const query = `UPDATE items SET ${updates.join(", ")} WHERE id = ?`;
+      const stmt = db.prepare(query);
+      const result = stmt.run(...params);
+      
+      if (result.changes === 0) {
+        return null; // Item no encontrado
+      }
+      
+      // Devolver el item actualizado
+      return itemModel.getById(id);
+    } catch (error) {
+      throw error;
+    }
+  },
+ 
   delete: (id) => {
     const stmt = db.prepare("DELETE FROM items WHERE id = ?");
     return stmt.run(id);

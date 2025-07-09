@@ -2,8 +2,6 @@ const itemModel = require("../models/item.model.js");
 
 const shopService = {
   getAllItems: async (filters) => {
-    // Aquí se implementaría la lógica para obtener todos los items
-    // con los filtros de búsqueda y ordenación aplicados.
     return itemModel.getAll(filters);
   },
   getItemById: (id) => {
@@ -13,16 +11,11 @@ const shopService = {
     return itemModel.create(name, price, stock, category);
   },
   updateItem: async (id, itemData) => {
-    // Aquí se implementaría la lógica para actualizar un item existente.
-    // Debería validar los datos y luego actualizar el item en la base de datos.
     try {
-      // Validar que el item existe
       const existingItem = await itemModel.getById(id);
       if (!existingItem) {
         throw new Error('Item no encontrado');
       }
-
-      // Validar datos requeridos
       if (itemData.name && itemData.name.trim() === '') {
         throw new Error('El nombre del item es requerido');
       }
@@ -32,8 +25,6 @@ const shopService = {
       if (itemData.stock && itemData.stock < 0) {
         throw new Error('El stock debe ser mayor o igual a 0');
       }
-
-      // Actualizar el item en la base de datos
       const updatedItem = await itemModel.updateItem(id, itemData);
       return updatedItem;
     } catch (error) {

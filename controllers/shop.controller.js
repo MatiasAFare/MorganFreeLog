@@ -3,7 +3,6 @@ const shopService = require("../services/shop.service");
 const shopController = {
   // ========== API METHODS (JSON) ==========
   getAllItems: async (req, res) => {
-    // Lógica para obtener todos los items
     try {
       const filters = req.query;
       const items = await shopService.getAllItems(filters);
@@ -14,7 +13,6 @@ const shopController = {
     }
   },
   getItemById: async (req, res) => {
-    // Lógica para obtener un item por ID
     try {
       const itemId = req.params.id;
       const item = await shopService.getItemById(itemId);
@@ -48,7 +46,6 @@ const shopController = {
     }
   },
   updateItem: async (req, res) => {
-    // Lógica para actualizar un item
     try {
       const { id } = req.params;
       const itemData = req.body;
@@ -72,7 +69,6 @@ const shopController = {
     }
   },
   deleteItem: async (req, res) => {
-    // Lógica para eliminar un item
     try {
       const itemId = req.params.id;
       const result = await shopService.deleteItem(itemId);
@@ -89,9 +85,7 @@ const shopController = {
 
   // ========== SHOW METHODS (Views) ==========
   showItemsList: async (req, res) => {
-    // Lógica para mostrar la lista de items
     try {
-      // Aquí se llamaría al servicio para obtener los items
       const filters = req.query;
       const items = await shopController.getAllItems(req, res);
       res.render("shop/items-list", {
@@ -99,7 +93,6 @@ const shopController = {
         items: items,
         error: req.query.error,
         success: req.query.success,
-        // Pasar los filtros actuales a la vista
         name: filters.name || '',
         price: filters.price || '',
         stock: filters.stock || '',
@@ -109,7 +102,6 @@ const shopController = {
       });
     } catch (error) {
       console.error("Error al obtener la lista de items:", error);
-      // En caso de error, se puede redirigir a una página de error o mostrar un mensaje
       return res.render("error", {
         message: "Error al cargar la lista de items",
         error: error.message,
@@ -120,8 +112,6 @@ const shopController = {
     res.render("shop/new", { error: null });
   },
   showDetails: async (req, res) => {
-    // Lógica para mostrar los detalles de un item
-    //Mati
     const item = await shopController.getItemById(req, res);
     if (!item) {
       return res.status(404).render("error", {
@@ -135,9 +125,19 @@ const shopController = {
     });
 
   },
-  showEditForm: (req, res) => {
-    // Lógica para mostrar el formulario de edición de un item
-    //Lucas
+  showEditForm: async (req, res) => {
+   const item = await shopController.getItemById(req, res);
+    if (!item) {
+      return res.status(404).render("error", {
+        message: "Item no encontrado",
+      });
+    }
+    res.render("shop/item-edit", {
+      title: "Editar Item",
+      item: item,
+      error: req.query.error,
+    });
+    
   },
 
   // ========== HANDLE METHODS (Actions) ==========
@@ -163,7 +163,6 @@ const shopController = {
   },
 
   handleUpdate: async (req, res) => {
-    // Lógica para procesar la actualización de un item
     try {
       const { id } = req.params;
       const itemData = req.body;
@@ -171,18 +170,34 @@ const shopController = {
       const updatedItem = await shopService.updateItem(id, itemData);
 
       if (!updatedItem) {
-        return res.render("shop/edit", {
+        const itemForView = {
+          id,
+          name: itemData.name || '',
+          price: parseFloat(itemData.price) || 0,
+          stock: parseInt(itemData.stock) || 0,
+          category: itemData.category || ''
+        };
+        
+        return res.render("shop/item-edit", {
           error: "Item no encontrado",
-          item: { id, ...itemData }
+          item: itemForView
         });
       }
 
       res.redirect(`/shop/${id}`);
     } catch (error) {
       console.error("Error al actualizar el item:", error);
-      res.render("shop/edit", {
+      const itemForView = {
+        id: req.params.id,
+        name: req.body.name || '',
+        price: parseFloat(req.body.price) || 0,
+        stock: parseInt(req.body.stock) || 0,
+        category: req.body.category || ''
+      };
+      
+      res.render("shop/item-edit", {
         error: "Error al actualizar el item: " + error.message,
-        item: { id: req.params.id, ...req.body }
+        item: itemForView
       });
     }
   },
@@ -191,10 +206,8 @@ const shopController = {
     try {
       const result = shopService.deleteItem(itemId);
       if (result.success) {
-        // Redirigir con mensaje de éxito
         return res.redirect('/shop?success=Item eliminado correctamente');
       } else {
-        // Redirigir con mensaje de error
         return res.redirect('/shop?error=Item no encontrado');
       }
     } catch (error) {
