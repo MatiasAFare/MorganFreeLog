@@ -18,9 +18,6 @@ const shopController = {
     //Lucas
   },
   createItem: async (req, res) => {
-    // Lógica para crear un nuevo item
-    //Lazaro
-    console.log("Creating item with data:", req.body);
     try {
       const { name, price, stock, category } = req.body;
 
