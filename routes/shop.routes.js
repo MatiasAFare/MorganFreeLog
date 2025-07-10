@@ -27,7 +27,7 @@ router.delete(
 // ========== VIEW ROUTES (HTML) ==========
 router.get("/", shopController.showItemsList); // Lista de items
 router.get(
-  "/new",
+  "/items-new",
   checkPermiso("GESTIONAR ITEMS"),
   shopController.showCreateForm
 ); // Formulario de creación

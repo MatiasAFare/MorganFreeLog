@@ -88,9 +88,11 @@ const shopController = {
     try {
       const filters = req.query;
       const items = await shopController.getAllItems(req, res);
+      const categories = await shopService.getCategories();
       res.render("shop/items-list", {
         title: "Lista de Items",
         items: items,
+        categories: categories,
         error: req.query.error,
         success: req.query.success,
         name: filters.name || '',
@@ -109,7 +111,18 @@ const shopController = {
     }
   },
   showCreateForm: async (req, res) => {
-    res.render("shop/new", { error: null });
+    try {
+      const categories = await shopService.getCategories();
+      res.render("shop/items-new", { 
+        error: null,
+        categories: categories
+      });
+    } catch (error) {
+      res.render("shop/items-new", { 
+        error: "Error al cargar categorías",
+        categories: []
+      });
+    }
   },
   showDetails: async (req, res) => {
     const item = await shopController.getItemById(req, res);
@@ -126,18 +139,26 @@ const shopController = {
 
   },
   showEditForm: async (req, res) => {
-   const item = await shopController.getItemById(req, res);
-    if (!item) {
-      return res.status(404).render("error", {
-        message: "Item no encontrado",
+    try {
+      const item = await shopController.getItemById(req, res);
+      if (!item) {
+        return res.status(404).render("error", {
+          message: "Item no encontrado",
+        });
+      }
+      const categories = await shopService.getCategories();
+      res.render("shop/item-edit", {
+        title: "Editar Item",
+        item: item,
+        categories: categories,
+        error: req.query.error,
+      });
+    } catch (error) {
+      res.render("error", {
+        message: "Error al cargar formulario de edición",
+        error: error.message,
       });
     }
-    res.render("shop/item-edit", {
-      title: "Editar Item",
-      item: item,
-      error: req.query.error,
-    });
-    
   },
 
   // ========== HANDLE METHODS (Actions) ==========
@@ -146,18 +167,22 @@ const shopController = {
       const { name, price, stock, category } = req.body;
 
       if (!name || !price) {
-        return res.render("shop/new", {
+        const categories = await shopService.getCategories();
+        return res.render("shop/items-new", {
           error: "El nombre y el precio son requeridos",
           item: { name, price, stock, category },
+          categories: categories
         });
       }
 
       await shopService.createItem(name, price, stock, category);
       res.redirect("/shop");
     } catch (error) {
-      res.render("shop/new", {
+      const categories = await shopService.getCategories();
+      res.render("shop/items-new", {
         error: error.message,
         item: req.body,
+        categories: categories
       });
     }
   },
@@ -170,6 +195,7 @@ const shopController = {
       const updatedItem = await shopService.updateItem(id, itemData);
 
       if (!updatedItem) {
+        const categories = await shopService.getCategories();
         const itemForView = {
           id,
           name: itemData.name || '',
@@ -180,13 +206,15 @@ const shopController = {
         
         return res.render("shop/item-edit", {
           error: "Item no encontrado",
-          item: itemForView
+          item: itemForView,
+          categories: categories
         });
       }
 
       res.redirect(`/shop/${id}`);
     } catch (error) {
       console.error("Error al actualizar el item:", error);
+      const categories = await shopService.getCategories();
       const itemForView = {
         id: req.params.id,
         name: req.body.name || '',
@@ -197,7 +225,8 @@ const shopController = {
       
       res.render("shop/item-edit", {
         error: "Error al actualizar el item: " + error.message,
-        item: itemForView
+        item: itemForView,
+        categories: categories
       });
     }
   },

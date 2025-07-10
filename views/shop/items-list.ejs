@@ -83,7 +83,7 @@
       <% } %>
 
       <div class="actions">
-        <a href="/shop/new" class="btn btn-primary">Nuevo Item</a>
+        <a href="/shop/items-new" class="btn btn-primary">Nuevo Item</a>
         <a href="/" class="btn btn-secondary">Volver al Inicio</a>
         <a href="/shop" class="btn btn-secondary">Limpiar Filtros</a>
       </div>
@@ -134,9 +134,9 @@
                 onchange="submitFilters()"
               >
                 <option value="">Todas las categorías</option>
-                <option value="Category A" <%= typeof category !== 'undefined' && category === 'Category A' ? 'selected' : '' %>>Category A</option>
-                <option value="Category B" <%= typeof category !== 'undefined' && category === 'Category B' ? 'selected' : '' %>>Category B</option>
-                <option value="Category C" <%= typeof category !== 'undefined' && category === 'Category C' ? 'selected' : '' %>>Category C</option>
+                <% categories.forEach(cat => { %>
+                <option value="<%= cat %>" <%= typeof category !== 'undefined' && category === cat ? 'selected' : '' %>><%= cat %></option>
+                <% }); %>
               </select>
             </div>
           </div>

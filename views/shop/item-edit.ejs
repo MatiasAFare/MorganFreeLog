@@ -31,7 +31,28 @@
 
             <div class="form-group">
                 <label for="category">Categoría:</label>
-                <input type="text" id="category" name="category" value="<%= item.category || '' %>" />
+                <select id="category-select">
+                  <option value="">Seleccione una categoría existente</option>
+                  <% categories.forEach(cat => { %>
+                  <option value="<%= cat %>" <%= item.category === cat ? 'selected' : '' %>><%= cat %></option>
+                  <% }); %>
+                </select>
+                
+                <div style="margin: 10px 0; text-align: center; color: #6c757d; font-weight: 500;">
+                  — O —
+                </div>
+                
+                <label for="new-category-input">Nueva categoría:</label>
+                <input type="text" id="new-category-input" placeholder="Escriba una nueva categoría..." 
+                       value="<%= categories.includes(item.category) ? '' : (item.category || '') %>"
+                       style="padding: 8px; border: 1px solid #ced4da; border-radius: 4px; width: 100%;" />
+                
+                <!-- Campo hidden que se enviará al backend -->
+                <input type="hidden" id="category" name="category" value="<%= item.category || '' %>" />
+                
+                <small style="color: #6c757d; font-size: 12px; display: block; margin-top: 5px;">
+                  💡 Seleccione una categoría existente O escriba una nueva (no ambas)
+                </small>
             </div>
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary">Guardar Cambios</button>
@@ -39,5 +60,72 @@
             </div>
         </form>
     </div>
+    
+    <script>
+      // Manejo de categoría mutuamente excluyente
+      const categorySelect = document.getElementById('category-select');
+      const newCategoryInput = document.getElementById('new-category-input');
+      const hiddenCategoryField = document.getElementById('category');
+      
+      // Función para establecer el estado inicial
+      function setInitialState() {
+        if (categorySelect.value) {
+          // Si hay una categoría seleccionada, deshabilitar el input
+          newCategoryInput.style.opacity = '0.5';
+          newCategoryInput.disabled = true;
+          hiddenCategoryField.value = categorySelect.value;
+        } else if (newCategoryInput.value.trim()) {
+          // Si hay una nueva categoría escrita, deshabilitar el select
+          categorySelect.style.opacity = '0.5';
+          categorySelect.disabled = true;
+          hiddenCategoryField.value = newCategoryInput.value.trim();
+        }
+      }
+      
+      // Establecer estado inicial al cargar la página
+      setInitialState();
+      
+      // Cuando se selecciona una categoría existente
+      categorySelect.addEventListener('change', function() {
+        if (this.value) {
+          newCategoryInput.value = '';
+          newCategoryInput.style.opacity = '0.5';
+          newCategoryInput.disabled = true;
+          hiddenCategoryField.value = this.value;
+        } else {
+          newCategoryInput.style.opacity = '1';
+          newCategoryInput.disabled = false;
+          hiddenCategoryField.value = '';
+        }
+      });
+      
+      // Cuando se escribe una nueva categoría
+      newCategoryInput.addEventListener('input', function() {
+        const newValue = this.value.trim();
+        if (newValue) {
+          categorySelect.value = '';
+          categorySelect.style.opacity = '0.5';
+          categorySelect.disabled = true;
+          hiddenCategoryField.value = newValue;
+        } else {
+          categorySelect.style.opacity = '1';
+          categorySelect.disabled = false;
+          hiddenCategoryField.value = '';
+        }
+      });
+      
+      // Validación antes del submit
+      document.querySelector('form').addEventListener('submit', function(e) {
+        const finalCategory = hiddenCategoryField.value;
+        
+        if (!finalCategory) {
+          e.preventDefault();
+          alert('Por favor seleccione una categoría existente o escriba una nueva.');
+          return false;
+        }
+        
+        console.log('Enviando categoría:', finalCategory); // Para debug
+      });
+    </script>
 </body>
 </html>
