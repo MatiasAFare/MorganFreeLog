@@ -62,5 +62,8 @@ const shopService = {
       };
     }
   },
+  getCategories: () => {
+    return itemModel.getCategories();
+  },
 };
 module.exports = shopService;

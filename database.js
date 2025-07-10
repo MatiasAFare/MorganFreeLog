@@ -63,6 +63,21 @@ db.prepare(
   `
 ).run();
 
+db.prepare(
+  `
+    CREATE TABLE IF NOT EXISTS logs (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+      user_id INTEGER,
+      endpoint TEXT NOT NULL,
+      method TEXT NOT NULL,
+      status INTEGER DEFAULT 0,
+      message TEXT,
+      FOREIGN KEY (user_id) REFERENCES users(id)
+    )
+  `
+).run();
+
 initDb();
 
 module.exports = db;

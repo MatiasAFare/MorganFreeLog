@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const permisosController = require("../controllers/permiso.controller");
-const checkPermiso = require("../middleware/checkPermiso.middleware");
+const { checkPermiso } = require("../middleware/checkPermiso.middleware");
 
 // ========== API ROUTES (JSON) ==========
 router.get("/api", permisosController.getPermisos);
@@ -51,7 +51,5 @@ router.post(
   checkPermiso("GESTIONAR PERMISOS"),
   permisosController.handleDelete
 ); // Eliminar permiso
-
-
 
 module.exports = router;

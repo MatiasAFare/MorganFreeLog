@@ -9,6 +9,7 @@ const insertDefaultPermisos = () => {
     { nombre: "GESTIONAR ROLES", descripcion: "Puede crear, editar, eliminar roles" },
     { nombre: "GESTIONAR PERMISOS", descripcion: "Puede crear, editar y eliminar permisos" },
     { nombre: "GESTIONAR ITEMS", descripcion: "Crear productos" },
+    { nombre: "GESTIONAR LOGS", descripcion: "Puede ver los logs del sistema" },
   ];
   const stmt = db.prepare(
     "INSERT OR IGNORE INTO permisos (nombre, descripcion) VALUES (?, ?)"

@@ -159,6 +159,12 @@ const itemModel = {
     const stmt = db.prepare("DELETE FROM items WHERE id = ?");
     return stmt.run(id);
   },
+  
+  getCategories: () => {
+    const stmt = db.prepare("SELECT DISTINCT category FROM items WHERE category IS NOT NULL AND category != '' ORDER BY category");
+    const categories = stmt.all();
+    return categories.map(row => row.category);
+  },
 };
 
 module.exports = itemModel;
