@@ -3,62 +3,158 @@
   <head>
     <title>Nuevo Producto</title>
     <link rel="stylesheet" href="/css/style.css" />
+    <style>
+      .category-section {
+        background-color: var(--bg-tertiary);
+        padding: 15px;
+        border-radius: 6px;
+        border: 1px solid var(--border-primary);
+        margin-bottom: 10px;
+      }
+      
+      .category-divider {
+        margin: 15px 0; 
+        text-align: center; 
+        color: var(--text-muted); 
+        font-weight: 500;
+        font-size: 14px;
+        position: relative;
+      }
+      
+      .category-divider::before,
+      .category-divider::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        width: 30%;
+        height: 1px;
+        background-color: var(--border-primary);
+      }
+      
+      .category-divider::before {
+        left: 10%;
+      }
+      
+      .category-divider::after {
+        right: 10%;
+      }
+      
+      .category-help {
+        color: var(--text-muted);
+        font-size: 12px;
+        display: block;
+        margin-top: 8px;
+        padding: 8px;
+        background-color: rgba(88, 166, 255, 0.1);
+        border-radius: 4px;
+        border-left: 3px solid var(--accent-blue);
+      }
+      
+      .disabled-field {
+        opacity: 0.5;
+        pointer-events: none;
+      }
+    </style>
   </head>
 
   <body>
     <div class="container">
-      <h1>Nuevo Producto</h1>
+      <h1>🛍️ Nuevo Producto</h1>
 
       <% if (error) { %>
       <div class="alert alert-danger"><%= error %></div>
       <% } %>
 
-      <form action="/shop" method="POST">
-        <div class="form-group">
-          <label for="name">Nombre:</label>
-          <input type="text" id="name" name="name" required />
-        </div>
+      <div class="card">
+        <div class="card-body">
+          <form action="/shop" method="POST">
+            <div class="form-group">
+              <label for="name">Nombre del producto:</label>
+              <input 
+                type="text" 
+                id="name" 
+                name="name" 
+                class="form-control"
+                placeholder="Ej: iPhone 15 Pro"
+                value="<%= typeof item !== 'undefined' ? item.name : '' %>"
+                required 
+              />
+            </div>
 
-        <div class="form-group">
-          <label for="price">Precio:</label>
-          <input type="number" id="price" name="price" step="0.01" min="0" required />
-        </div>
+            <div class="form-group">
+              <label for="price">Precio (USD):</label>
+              <input 
+                type="number" 
+                id="price" 
+                name="price" 
+                class="form-control"
+                step="0.01" 
+                min="0" 
+                placeholder="0.00"
+                value="<%= typeof item !== 'undefined' ? item.price : '' %>"
+                required 
+              />
+            </div>
 
-        <div class="form-group">
-          <label for="stock">Stock:</label>
-          <input type="number" id="stock" name="stock" min="0" required />
-        </div>
+            <div class="form-group">
+              <label for="stock">Stock disponible:</label>
+              <input 
+                type="number" 
+                id="stock" 
+                name="stock" 
+                class="form-control"
+                min="0" 
+                placeholder="0"
+                value="<%= typeof item !== 'undefined' ? item.stock : '' %>"
+                required 
+              />
+            </div>
 
-        <div class="form-group">
-          <label for="category">Categoría:</label>
-          <select id="category-select">
-            <option value="">Seleccione una categoría existente</option>
-            <% categories.forEach(cat => { %>
-            <option value="<%= cat %>"><%= cat %></option>
-            <% }); %>
-          </select>
-          
-          <div style="margin: 10px 0; text-align: center; color: #6c757d; font-weight: 500;">
-            — O —
-          </div>
-          
-          <label for="new-category-input">Nueva categoría:</label>
-          <input type="text" id="new-category-input" placeholder="Escriba una nueva categoría..." 
-                 style="padding: 8px; border: 1px solid #ced4da; border-radius: 4px; width: 100%;" />
-          
-          <!-- Campo hidden que se enviará al backend -->
-          <input type="hidden" id="category" name="category" value="" />
-          
-          <small style="color: #6c757d; font-size: 12px; display: block; margin-top: 5px;">
-            💡 Seleccione una categoría existente O escriba una nueva (no ambas)
-          </small>
-        </div>
+            <div class="form-group">
+              <label>Categoría del producto:</label>
+              <div class="category-section">
+                <label for="category-select">Seleccionar categoría existente:</label>
+                <select id="category-select" class="form-control">
+                  <option value="">-- Seleccione una categoría --</option>
+                  <% categories.forEach(cat => { %>
+                  <option value="<%= cat %>" 
+                    <%= (typeof item !== 'undefined' && item.category === cat) ? 'selected' : '' %>>
+                    <%= cat %>
+                  </option>
+                  <% }); %>
+                </select>
+                
+                <div class="category-divider">O CREAR NUEVA</div>
+                
+                <label for="new-category-input">Nueva categoría:</label>
+                <input 
+                  type="text" 
+                  id="new-category-input" 
+                  class="form-control"
+                  placeholder="Ej: Electrónicos, Ropa, Hogar..."
+                  value="<%= (typeof item !== 'undefined' && item.category && !categories.includes(item.category)) ? item.category : '' %>"
+                />
+                
+                <!-- Campo hidden que se enviará al backend -->
+                <input type="hidden" id="category" name="category" value="<%= typeof item !== 'undefined' ? item.category : '' %>" />
+                
+                <small class="category-help">
+                  💡 Puede seleccionar una categoría existente O crear una nueva, pero no ambas opciones a la vez.
+                </small>
+              </div>
+            </div>
 
-        <div class="form-group">
-          <button type="submit" class="btn btn-primary">Crear Producto</button>
-          <a href="/shop" class="btn btn-secondary">Cancelar</a>
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary">
+                ✅ Crear Producto
+              </button>
+              <a href="/shop" class="btn btn-secondary">
+                ❌ Cancelar
+              </a>
+            </div>
+          </form>
         </div>
-      </form>
+      </div>
     </div>
     
     <script>
@@ -67,46 +163,57 @@
       const newCategoryInput = document.getElementById('new-category-input');
       const hiddenCategoryField = document.getElementById('category');
       
+      // Función para actualizar el estado visual
+      function updateFieldStates() {
+        const selectValue = categorySelect.value;
+        const inputValue = newCategoryInput.value.trim();
+        
+        if (selectValue) {
+          // Si hay una categoría seleccionada, deshabilitar input
+          newCategoryInput.classList.add('disabled-field');
+          hiddenCategoryField.value = selectValue;
+        } else if (inputValue) {
+          // Si hay texto en input, deshabilitar select
+          categorySelect.classList.add('disabled-field');
+          hiddenCategoryField.value = inputValue;
+        } else {
+          // Si no hay nada, habilitar ambos
+          categorySelect.classList.remove('disabled-field');
+          newCategoryInput.classList.remove('disabled-field');
+          hiddenCategoryField.value = '';
+        }
+      }
+      
       // Cuando se selecciona una categoría existente
       categorySelect.addEventListener('change', function() {
         if (this.value) {
           newCategoryInput.value = '';
-          newCategoryInput.style.opacity = '0.5';
-          newCategoryInput.disabled = true;
-          hiddenCategoryField.value = this.value;
-        } else {
-          newCategoryInput.style.opacity = '1';
-          newCategoryInput.disabled = false;
-          hiddenCategoryField.value = '';
         }
+        updateFieldStates();
       });
       
       // Cuando se escribe una nueva categoría
       newCategoryInput.addEventListener('input', function() {
-        const newValue = this.value.trim();
-        if (newValue) {
+        if (this.value.trim()) {
           categorySelect.value = '';
-          categorySelect.style.opacity = '0.5';
-          categorySelect.disabled = true;
-          hiddenCategoryField.value = newValue;
-        } else {
-          categorySelect.style.opacity = '1';
-          categorySelect.disabled = false;
-          hiddenCategoryField.value = '';
         }
+        updateFieldStates();
       });
       
       // Validación antes del submit
       document.querySelector('form').addEventListener('submit', function(e) {
-        const finalCategory = hiddenCategoryField.value;
+        const finalCategory = hiddenCategoryField.value.trim();
         
         if (!finalCategory) {
           e.preventDefault();
-          alert('Por favor seleccione una categoría existente o escriba una nueva.');
+          alert('⚠️ Por favor seleccione una categoría existente o escriba una nueva.');
           return false;
         }
-        
-        console.log('Enviando categoría:', finalCategory); // Para debug
+      });
+      
+      // Inicializar el estado al cargar la página
+      document.addEventListener('DOMContentLoaded', function() {
+        updateFieldStates();
       });
     </script>
   </body>
