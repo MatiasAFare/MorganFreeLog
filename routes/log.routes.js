@@ -6,4 +6,7 @@ const { checkPermiso } = require("../middleware/checkPermiso.middleware");
 // ========== VIEW ROUTES ==========
 router.get("/", checkPermiso("GESTIONAR LOGS"), logController.showLogsList);
 
+// ========== EXPORT ROUTES ==========
+router.get("/export", checkPermiso("GESTIONAR LOGS"), logController.exportLogsToTxt);
+
 module.exports = router;

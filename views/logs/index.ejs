@@ -70,6 +70,10 @@
 
       <div class="actions">
         <a href="/" class="btn btn-secondary">Volver al Inicio</a>
+        <a href="/logs/export<%= Object.keys(filters).length > 0 ? '?' + new URLSearchParams(filters).toString() : '' %>" 
+           class="btn btn-success">
+          📄 Exportar a TXT
+        </a>
       </div>
 
       <!-- Filtros -->

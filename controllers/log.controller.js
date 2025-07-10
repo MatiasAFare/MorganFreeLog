@@ -45,6 +45,40 @@ const logController = {
   },
 
   // ========== API METHODS ==========
+  exportLogsToTxt: async (req, res) => {
+    try {
+      const filters = req.query;
+      const logs = await logService.getAllLogs(filters);
+      
+      // Generar contenido del archivo TXT
+      let txtContent = "LOGS DEL SISTEMA\n";
+      txtContent += "==================\n";
+      txtContent += `Exportado el: ${new Date().toLocaleString('es-ES')}\n`;
+      txtContent += `Total de logs: ${logs.length}\n\n`;
+      
+      logs.forEach((log, index) => {
+        txtContent += `--- LOG ${index + 1} ---\n`;
+        txtContent += `Timestamp: ${new Date(log.timestamp).toLocaleString('es-ES')}\n`;
+        txtContent += `Usuario: ${log.user_name || 'Anónimo'} ${log.user_email ? `(${log.user_email})` : ''}\n`;
+        txtContent += `Método: ${log.method}\n`;
+        txtContent += `Endpoint: ${log.endpoint}\n`;
+        txtContent += `Estado: ${log.status}\n`;
+        txtContent += `Mensaje: ${log.message || 'N/A'}\n\n`;
+      });
+      
+      // Configurar headers para descarga
+      const fileName = `logs_${new Date().toISOString().split('T')[0]}.txt`;
+      res.setHeader('Content-Type', 'text/plain');
+      res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+      
+      // Enviar el archivo
+      res.send(txtContent);
+    } catch (error) {
+      console.error("Error al exportar logs:", error);
+      res.redirect(`/logs?error=Error al exportar logs: ${error.message}`);
+    }
+  },
+
   cleanOldLogs: async (req, res) => {
     try {
       const daysToKeep = req.body.days || 30;
