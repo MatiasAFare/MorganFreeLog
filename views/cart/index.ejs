@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Mi Carrito de Compras</title>
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+
+  <body>
+    <div class="container">
+      <h1>Mi Carrito de Compras</h1>
+
+      <% if (error) { %>
+      <div class="alert alert-danger"><%= error %></div>
+      <% } %>
+
+      <div class="actions">
+        <a href="/items" class="btn btn-primary">Agregar Productos</a>
+        <a href="/" class="btn btn-secondary">Volver al Inicio</a>
+      </div>
+
+      <% if (items && items.length > 0) { %>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Producto</th>
+            <th>Descripción</th>
+            <th>Precio Unitario</th>
+            <th>Cantidad</th>
+            <th>Subtotal</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% let total = 0; %>
+          <% items.forEach(item => { %>
+          <% const subtotal = item.price * item.quantity; %>
+          <% total += subtotal; %>
+          <tr>
+            <td><%= item.id %></td>
+            <td><%= item.name %></td>
+            <td><%= item.description || 'Sin descripción' %></td>
+            <td>$<%= item.price.toFixed(2) %></td>
+            <td><%= item.quantity %></td>
+            <td>$<%= subtotal.toFixed(2) %></td>
+            <td class="actions">
+              <a href="/cart/<%= item.id %>/edit" class="btn btn-sm btn-warning">
+                Editar
+              </a>
+              <form
+                action="/cart/<%= item.id %>/delete"
+                method="POST"
+                style="display: inline"
+              >
+                <button
+                  type="submit"
+                  class="btn btn-sm btn-danger"
+                  onclick="return confirm('¿Está seguro que desea eliminar este producto del carrito?')"
+                >
+                  Eliminar
+                </button>
+              </form>
+            </td>
+          </tr>
+          <% }); %>
+        </tbody>
+        <tfoot>
+          <tr class="table-total">
+            <td colspan="5"><strong>Total:</strong></td>
+            <td><strong>$<%= total.toFixed(2) %></strong></td>
+            <td></td>
+          </tr>
+        </tfoot>
+      </table>
+
+      <div class="cart-actions">
+        <form action="/cart/clear" method="POST" style="display: inline">
+          <button
+            type="submit"
+            class="btn btn-warning"
+            onclick="return confirm('¿Está seguro que desea vaciar el carrito?')"
+          >
+            Vaciar Carrito
+          </button>
+        </form>
+        <a href="/checkout" class="btn btn-success">Proceder al Pago</a>
+      </div>
+
+      <% } else { %>
+      <div class="empty-cart">
+        <p>Tu carrito está vacío.</p>
+        <a href="/items" class="btn btn-primary">Explorar Productos</a>
+      </div>
+      <% } %>
+    </div>
+  </body>
+</html>

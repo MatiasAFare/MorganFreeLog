@@ -63,6 +63,19 @@ db.prepare(
   `
 ).run();
 
+db.prepare(
+  `
+    CREATE TABLE IF NOT EXISTS cart (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      item_id INTEGER NOT NULL,
+      quantity INTEGER NOT NULL,
+      FOREIGN KEY (user_id) REFERENCES users(id),
+      FOREIGN KEY (item_id) REFERENCES items(id)
+    )
+  `
+).run();
+
 initDb();
 
 module.exports = db;

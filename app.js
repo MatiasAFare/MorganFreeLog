@@ -37,6 +37,7 @@ app.use("/roles", require("./routes/roles.routes"));
 app.use("/permisos", require("./routes/permiso.routes"));
 app.use("/auth", require("./routes/auth.routes"));
 app.use("/shop", require("./routes/shop.routes"));
+app.use("/cart", require("./routes/cart.routes"));
 
 app.get("/", (req, res) => {
   res.render("index");

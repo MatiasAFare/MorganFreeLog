@@ -18,6 +18,9 @@
           <li><a href="/permisos">Gestión de Permisos</a></li>
           <li><a href="/shop">Tienda</a></li>
           <% if (locals.isLoggedIn) { %>
+            <li>
+              <a href="/cart">Mi Carrito de Compras</a>
+            </li>
           <li>
             <form action="/auth/logout" method="POST" class="logout-form">
               <button type="submit" class="link-button">Cerrar Sesión</button>
