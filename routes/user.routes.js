@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/user.controller');
-const checkPermiso = require('../middleware/checkPermiso.middleware');
+const {checkPermiso} = require('../middleware/checkPermiso.middleware');
 
 // ========== API ROUTES (JSON) ==========
 router.get('/api', userController.getUsers);
