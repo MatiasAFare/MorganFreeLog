@@ -72,6 +72,15 @@ db.prepare(
       quantity INTEGER NOT NULL,
       FOREIGN KEY (user_id) REFERENCES users(id),
       FOREIGN KEY (item_id) REFERENCES items(id)
+    CREATE TABLE IF NOT EXISTS logs (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+      user_id INTEGER,
+      endpoint TEXT NOT NULL,
+      method TEXT NOT NULL,
+      status INTEGER DEFAULT 0,
+      message TEXT,
+      FOREIGN KEY (user_id) REFERENCES users(id)
     )
   `
 ).run();

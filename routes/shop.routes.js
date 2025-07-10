@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const shopController = require("../controllers/shop.controller");
-const checkPermiso = require("../middleware/checkPermiso.middleware");
+const { checkPermiso } = require("../middleware/checkPermiso.middleware");
 
 //VALIDAR SI FALTAN RUTAS, LUCAS, LAZARO Y MATIAS, SI FALTAN AGREGARLAS UWU
 
@@ -27,7 +27,7 @@ router.delete(
 // ========== VIEW ROUTES (HTML) ==========
 router.get("/", shopController.showItemsList); // Lista de items
 router.get(
-  "/new",
+  "/items-new",
   checkPermiso("GESTIONAR ITEMS"),
   shopController.showCreateForm
 ); // Formulario de creación

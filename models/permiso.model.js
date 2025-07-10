@@ -1,5 +1,51 @@
 const db = require("../database");
 
+const insertDefaultPermisos = () => {
+  const permisos = [
+    { nombre: "ADMIN", descripcion: "Permisos varios" },
+    { nombre: "SUPER ADMIN", descripcion: "Acceso total a la aplicación" },
+    { nombre: "LOGIN", descripcion: "Poder acceder al login" },
+    { nombre: "GESTIONAR USUARIOS", descripcion: "Puede crear, editar, eliminar usuarios" },
+    { nombre: "GESTIONAR ROLES", descripcion: "Puede crear, editar, eliminar roles" },
+    { nombre: "GESTIONAR PERMISOS", descripcion: "Puede crear, editar y eliminar permisos" },
+    { nombre: "GESTIONAR ITEMS", descripcion: "Crear productos" },
+    { nombre: "GESTIONAR LOGS", descripcion: "Puede ver los logs del sistema" },
+  ];
+  const stmt = db.prepare(
+    "INSERT OR IGNORE INTO permisos (nombre, descripcion) VALUES (?, ?)"
+  );
+  permisos.forEach((permiso) => {
+    stmt.run(permiso.nombre, permiso.descripcion);
+  });
+};
+
+const initPermisos = () => {
+  const permisosCount = db.prepare("SELECT COUNT(*) as count FROM permisos").get();
+  if (permisosCount.count === 0) {
+    console.log("Semillando permisos por defecto...");
+    insertDefaultPermisos();
+    
+    // Asignar todos los permisos al rol administrador (id: 1)
+    console.log("Asignando permisos al rol administrador...");
+    const permisos = db.prepare("SELECT id FROM permisos").all();
+    const assignStmt = db.prepare("INSERT OR IGNORE INTO rol_permiso (rol_id, permiso_id) VALUES (?, ?)");
+    
+    permisos.forEach((permiso) => {
+      assignStmt.run(1, permiso.id); // Asignar al rol administrador (id: 1)
+    });
+    
+    // Asignar solo LOGIN al rol usuario (id: 2)
+    const loginPermiso = db.prepare("SELECT id FROM permisos WHERE nombre = 'LOGIN'").get();
+    if (loginPermiso) {
+      assignStmt.run(2, loginPermiso.id); // Asignar al rol usuario (id: 2)
+    }
+    
+    console.log("Permisos asignados correctamente.");
+  }
+};
+initPermisos();
+
+
 const PermisoModel = {
   getById: (id) => {
     const stmt = db.prepare("SELECT * FROM permisos WHERE id = ?");
