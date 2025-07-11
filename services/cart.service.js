@@ -7,10 +7,24 @@ const CartService = {
   },
 
   // Add item to cart
-  addItemToCart() {},
+  addItemToCart(userId, itemId, quantity) {
+    // Verificar si el item ya existe en el carrito
+    const existingItem = cartModel.findByUserAndItem(userId, itemId);
+
+    if (existingItem) {
+      // Si ya existe, aumentar la cantidad
+      const newQuantity = parseInt(existingItem.quantity) + parseInt(quantity);
+      return cartModel.update(existingItem.id, newQuantity);
+    } else {
+      // Si no existe, crear nuevo item
+      return cartModel.create(userId, itemId, quantity);
+    }
+  },
 
   // Remove item from cart
-  removeItemFromCart() {},
+  removeItemFromCart(itemId) {
+    return cartModel.delete(itemId);
+  },
 
   // Update item quantity
   updateItemQuantity() {},

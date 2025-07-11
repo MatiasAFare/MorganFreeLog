@@ -10,11 +10,15 @@
       <h1>Mi Carrito de Compras</h1>
 
       <% if (error) { %>
-      <div class="alert alert-danger"><%= error %></div>
+      <div class="alert alert-danger auto-hide"><%= error %></div>
+      <% } %>
+
+      <% if (typeof success !== 'undefined' && success) { %>
+      <div class="alert alert-success auto-hide"><%= success %></div>
       <% } %>
 
       <div class="actions">
-        <a href="/items" class="btn btn-primary">Agregar Productos</a>
+        <a href="/shop" class="btn btn-primary">Agregar Productos</a>
         <a href="/" class="btn btn-secondary">Volver al Inicio</a>
       </div>
 
@@ -24,7 +28,6 @@
           <tr>
             <th>ID</th>
             <th>Producto</th>
-            <th>Descripción</th>
             <th>Precio Unitario</th>
             <th>Cantidad</th>
             <th>Subtotal</th>
@@ -39,14 +42,10 @@
           <tr>
             <td><%= item.id %></td>
             <td><%= item.name %></td>
-            <td><%= item.description || 'Sin descripción' %></td>
             <td>$<%= item.price.toFixed(2) %></td>
             <td><%= item.quantity %></td>
             <td>$<%= subtotal.toFixed(2) %></td>
             <td class="actions">
-              <a href="/cart/<%= item.id %>/edit" class="btn btn-sm btn-warning">
-                Editar
-              </a>
               <form
                 action="/cart/<%= item.id %>/delete"
                 method="POST"

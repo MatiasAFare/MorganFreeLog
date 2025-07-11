@@ -1,18 +1,17 @@
 const express = require("express");
 const cartController = require("../controllers/cart.controller");
+const { checkPermiso } = require("../middleware/checkPermiso.middleware");
 const router = express.Router();
 
 // ========== API ROUTES (JSON) ==========
-router.get("/", cartController.getAllItems);
-router.get("/:id/edit", cartController.showEditForm);
+router.get("/api", checkPermiso("LOGIN"), cartController.getAllItems);
+router.delete("/api/:id", checkPermiso("LOGIN"), cartController.deleteItem);
 
 // ========== VIEW ROUTES (HTML) ==========
-router.get("/", cartController.showCartItemsList); // Lista de productos en el carrito
-router.get("/:id/edit", cartController.showEditForm); // Formulario de edición del carrito
+router.get("/", checkPermiso("LOGIN"), cartController.showCartItemsList); // Lista de productos en el carrito
 
 // ========== ACTION ROUTES (POST) ==========
-router.post("/", cartController.handleCreate); // Procesar agregar al carrito
-router.post("/:id/edit", cartController.handleUpdate); // Procesar eliminar del carrito
-router.post("/:id/delete", cartController.handleDelete); // Procesar eliminar del carrito
+router.post("/", checkPermiso("LOGIN"), cartController.handleCreate); // Procesar agregar al carrito
+router.post("/:id/delete", checkPermiso("LOGIN"), cartController.handleDelete); // Procesar eliminar del carrito
 
 module.exports = router;

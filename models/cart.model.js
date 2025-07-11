@@ -24,7 +24,11 @@ const initCart = () => {
   }
 };
 
-initCart();
+// problema al iniciar la base de datos del carrito
+// cambiar por una solucion mejor
+setTimeout(() => {
+  initCart();
+}, 1000);
 
 const cartModel = {
   getByUserId: (user_id) => {

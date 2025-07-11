@@ -1,4 +1,47 @@
 const db = require("../database");
+const { hashPassword } = require("../utils/password.util");
+
+const insertDefaultUsers = async () => {
+  const hashedTestPassword = await hashPassword("test123");
+
+  const users = [
+    {
+      id: 1,
+      name: "admin test",
+      email: "admintest@test.com",
+      password: hashedTestPassword,
+      rol_id: 1,
+    },
+    {
+      id: 2,
+      name: "user test",
+      email: "test@test.com",
+      password: hashedTestPassword,
+      rol_id: 2,
+    },
+  ];
+
+  const stmt = db.prepare(
+    "INSERT OR IGNORE INTO users (name, email, password, rol_id) VALUES (?, ?, ?, ?)"
+  );
+
+  users.forEach((user) => {
+    stmt.run(user.name, user.email, user.password, user.rol_id);
+  });
+
+  console.log("Usuarios por defecto insertados correctamente");
+};
+
+const initUsers = async () => {
+  const row = db.prepare("SELECT COUNT(*) as count FROM users").get();
+
+  if (row.count === 0) {
+    console.log("Semillando la base de datos con usuarios por defecto...");
+    await insertDefaultUsers();
+  }
+};
+
+initUsers();
 
 const UserModel = {
   getUserById: (id) => {
