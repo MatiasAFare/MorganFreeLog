@@ -1,7 +1,7 @@
 const cartService = require("../services/cart.service");
 
 const cartController = {
-  // ========== API METHODS (JSON) ==========
+  // ========== MÉTODOS API (JSON) ==========
   getAllItems: async (req, res) => {
     try {
       const userId = req.session.userId || req.user.id || null;
@@ -33,7 +33,112 @@ const cartController = {
     }
   },
 
-  // ========== SHOW METHODS (Views) ==========
+  // NUEVA FUNCIONALIDAD: Vaciar carrito completo
+  clearCart: async (req, res) => {
+    try {
+      const userId = req.session.userId || req.user?.id || null;
+
+      if (!userId) {
+        return res.status(401).json({ message: "Usuario no autenticado" });
+      }
+
+      const result = await cartService.clearCartByUserId(userId);
+
+      if (result.changes === 0) {
+        return res.status(404).json({ message: "Carrito ya está vacío" });
+      }
+
+      res.status(200).json({
+        message: "Carrito vaciado exitosamente",
+        itemsRemoved: result.changes
+      });
+    } catch (error) {
+      console.error("Error clearing cart:", error);
+      res.status(500).json({ message: "Error al vaciar el carrito" });
+    }
+  },
+
+  // NUEVA FUNCIONALIDAD: Obtener total del carrito para modal
+  getCartTotal: async (req, res) => {
+    try {
+      const userId = req.session.userId || req.user?.id || null;
+
+      if (!userId) {
+        return res.status(401).json({ message: "Usuario no autenticado" });
+      }
+
+      const cartData = await cartService.getCartTotalAndItems(userId);
+
+      if (!cartData.items || cartData.items.length === 0) {
+        return res.status(400).json({ message: "Carrito vacío" });
+      }
+
+      // Generar ID único de compra
+      const purchaseId = `PUR-${Date.now()}-${userId}`;
+
+      res.status(200).json({
+        purchaseId: purchaseId,
+        total: cartData.total,
+        itemCount: cartData.items.length,
+        items: cartData.items,
+        user: {
+          id: userId,
+          name: req.user?.name || req.session?.user?.name || 'Usuario'
+        }
+      });
+    } catch (error) {
+      console.error("Error getting cart total:", error);
+      res.status(500).json({ message: "Error al calcular el total" });
+    }
+  },
+
+  // NUEVA FUNCIONALIDAD: Procesar pago/compra
+  processPurchase: async (req, res) => {
+    try {
+      const { purchaseId } = req.body;
+      const userId = req.session.userId || req.user?.id || null;
+
+      if (!userId) {
+        return res.status(401).json({ message: "Usuario no autenticado" });
+      }
+
+      if (!purchaseId) {
+        return res.status(400).json({ message: "ID de compra requerido" });
+      }
+
+      // Obtener datos del carrito antes de procesar
+      const cartData = await cartService.getCartTotalAndItems(userId);
+
+      if (!cartData.items || cartData.items.length === 0) {
+        return res.status(400).json({ message: "Carrito vacío" });
+      }
+
+      // Procesar la compra (aquí podrías agregar lógica de pago real)
+      const purchase = await cartService.processPurchase(userId, purchaseId, cartData);
+
+      // Vaciar el carrito después de la compra exitosa
+      await cartService.clearCartByUserId(userId);
+
+      res.status(200).json({
+        message: "Compra procesada exitosamente",
+        purchase: {
+          id: purchaseId,
+          total: cartData.total,
+          itemCount: cartData.items.length,
+          date: new Date().toISOString(),
+          status: "completed"
+        }
+      });
+    } catch (error) {
+      console.error("Error processing purchase:", error);
+      res.status(500).json({
+        message: "Error al procesar la compra",
+        error: error.message
+      });
+    }
+  },
+
+  // ========== MÉTODOS DE VISTA (Vistas) ==========
   showCartItemsList: async (req, res) => {
     try {
       // Usar req.user del middleware checkPermiso, con fallback a sesión
@@ -62,7 +167,7 @@ const cartController = {
     }
   },
 
-  // ========== HANDLE METHODS (Actions) ==========
+  // ========== MÉTODOS DE MANEJO (Acciones) ==========
   handleCreate: async (req, res) => {
     try {
       const { item_id, quantity } = req.body;
@@ -96,6 +201,27 @@ const cartController = {
       res.redirect("/cart?success=Item eliminado del carrito exitosamente");
     } catch (error) {
       res.redirect(`/cart?error=${encodeURIComponent(error.message)}`);
+    }
+  },
+  // NUEVA FUNCIONALIDAD: Manejar vaciar carrito desde vista
+  handleClearCart: async (req, res) => {
+    try {
+      const userId = req.session.userId || req.user?.id || null;
+
+      if (!userId) {
+        return res.redirect("/auth/login?error=Debe iniciar sesión");
+      }
+
+      const result = await cartService.clearCartByUserId(userId);
+
+      if (result.changes === 0) {
+        return res.redirect("/cart?error=Carrito ya está vacío");
+      }
+
+      res.redirect("/cart?success=Carrito vaciado exitosamente");
+    } catch (error) {
+      console.error("Error clearing cart:", error);
+      res.redirect(`/cart?error=${encodeURIComponent("Error al vaciar el carrito")}`);
     }
   },
 };

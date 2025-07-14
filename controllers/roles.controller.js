@@ -2,7 +2,7 @@ const RolService = require("../services/rol.service");
 const PermisoService = require("../services/permiso.service");
 
 const rolesController = {
-  // ========== API METHODS (JSON) ==========
+  // ========== MÉTODOS API (JSON) ==========
   getRoles: async (req, res) => {
     try {
       const roles = await RolService.getAll();
@@ -103,7 +103,7 @@ const rolesController = {
     }
   },
 
-  // ========== SHOW METHODS (Views) ==========
+  // ========== MÉTODOS DE VISTA (Vistas) ==========
   showRolesList: async (req, res) => {
     try {
       const roles = await RolService.getAll();
@@ -188,7 +188,7 @@ const rolesController = {
     }
   },
 
-  // ========== HANDLE METHODS (Actions) ==========
+  // ========== MÉTODOS DE MANEJO (Acciones) ==========
   handleCreate: async (req, res) => {
     try {
       const { nombre } = req.body;

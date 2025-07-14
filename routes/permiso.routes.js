@@ -3,7 +3,7 @@ const router = express.Router();
 const permisosController = require("../controllers/permiso.controller");
 const { checkPermiso } = require("../middleware/checkPermiso.middleware");
 
-// ========== API ROUTES (JSON) ==========
+// ========== RUTAS API (JSON) ==========
 router.get("/api", permisosController.getPermisos);
 router.get("/api/:id", permisosController.getPermisoById);
 router.post(
@@ -22,7 +22,7 @@ router.delete(
   permisosController.deletePermiso
 );
 
-// ========== VIEW ROUTES (HTML) ==========
+// ========== RUTAS DE VISTA (HTML) ==========
 router.get("/", permisosController.showPermisosList); // Lista de permisos
 router.get(
   "/new",
@@ -35,7 +35,7 @@ router.get(
   permisosController.showEditForm
 ); // Formulario de edición
 
-// ========== ACTION ROUTES (POST) ==========
+// ========== RUTAS DE ACCIÓN (POST) ==========
 router.post(
   "/",
   checkPermiso("GESTIONAR PERMISOS"),

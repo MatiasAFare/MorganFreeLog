@@ -1,7 +1,7 @@
 const shopService = require("../services/shop.service");
 
 const shopController = {
-  // ========== API METHODS (JSON) ==========
+  // ========== MÉTODOS API (JSON) ==========
   getAllItems: async (req, res) => {
     try {
       const filters = req.query;
@@ -83,7 +83,7 @@ const shopController = {
     }
   },
 
-  // ========== SHOW METHODS (Views) ==========
+  // ========== MÉTODOS DE VISTA (Vistas) ==========
   showItemsList: async (req, res) => {
     try {
       const filters = req.query;
@@ -113,12 +113,12 @@ const shopController = {
   showCreateForm: async (req, res) => {
     try {
       const categories = await shopService.getCategories();
-      res.render("shop/items-new", { 
+      res.render("shop/items-new", {
         error: null,
         categories: categories
       });
     } catch (error) {
-      res.render("shop/items-new", { 
+      res.render("shop/items-new", {
         error: "Error al cargar categorías",
         categories: []
       });
@@ -161,7 +161,7 @@ const shopController = {
     }
   },
 
-  // ========== HANDLE METHODS (Actions) ==========
+  // ========== MÉTODOS DE MANEJO (Acciones) ==========
   handleCreate: async (req, res) => {
     try {
       const { name, price, stock, category } = req.body;
@@ -203,7 +203,7 @@ const shopController = {
           stock: parseInt(itemData.stock) || 0,
           category: itemData.category || ''
         };
-        
+
         return res.render("shop/item-edit", {
           error: "Item no encontrado",
           item: itemForView,
@@ -222,7 +222,7 @@ const shopController = {
         stock: parseInt(req.body.stock) || 0,
         category: req.body.category || ''
       };
-      
+
       res.render("shop/item-edit", {
         error: "Error al actualizar el item: " + error.message,
         item: itemForView,

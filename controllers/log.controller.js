@@ -6,7 +6,7 @@ const logController = {
     try {
       const filters = req.query;
       const logs = await logService.getAllLogs(filters);
-      
+
       res.render("logs/index", {
         title: "Logs del Sistema",
         logs: logs,
@@ -31,7 +31,7 @@ const logController = {
           message: "Log no encontrado",
         });
       }
-      
+
       res.render("logs/details", {
         title: "Detalles del Log",
         log: log
@@ -44,18 +44,18 @@ const logController = {
     }
   },
 
-  // ========== API METHODS ==========
+  // ========== MÉTODOS API ==========
   exportLogsToTxt: async (req, res) => {
     try {
       const filters = req.query;
       const logs = await logService.getAllLogs(filters);
-      
+
       // Generar contenido del archivo TXT
       let txtContent = "LOGS DEL SISTEMA\n";
       txtContent += "==================\n";
       txtContent += `Exportado el: ${new Date().toLocaleString('es-ES')}\n`;
       txtContent += `Total de logs: ${logs.length}\n\n`;
-      
+
       logs.forEach((log, index) => {
         txtContent += `--- LOG ${index + 1} ---\n`;
         txtContent += `Timestamp: ${new Date(log.timestamp).toLocaleString('es-ES')}\n`;
@@ -65,12 +65,12 @@ const logController = {
         txtContent += `Estado: ${log.status}\n`;
         txtContent += `Mensaje: ${log.message || 'N/A'}\n\n`;
       });
-      
+
       // Configurar headers para descarga
       const fileName = `logs_${new Date().toISOString().split('T')[0]}.txt`;
       res.setHeader('Content-Type', 'text/plain');
       res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
-      
+
       // Enviar el archivo
       res.send(txtContent);
     } catch (error) {
@@ -83,7 +83,7 @@ const logController = {
     try {
       const daysToKeep = req.body.days || 30;
       const result = await logService.cleanOldLogs(daysToKeep);
-      
+
       res.redirect(`/logs?success=Se eliminaron ${result.changes} logs antiguos`);
     } catch (error) {
       res.redirect(`/logs?error=Error al limpiar logs: ${error.message}`);

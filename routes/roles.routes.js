@@ -3,7 +3,7 @@ const router = express.Router();
 const rolesController = require("../controllers/roles.controller");
 const { checkPermiso } = require("../middleware/checkPermiso.middleware");
 
-// ========== API ROUTES (JSON) ==========
+// ========== RUTAS API (JSON) ==========
 router.get("/api", rolesController.getRoles);
 router.get("/api/:id", rolesController.getRolById);
 router.post("/api", checkPermiso("GESTIONAR ROLES"), rolesController.createRol);
@@ -18,7 +18,7 @@ router.delete(
   rolesController.deleteRol
 );
 
-// ========== VIEW ROUTES (HTML) ==========
+// ========== RUTAS DE VISTA (HTML) ==========
 router.get("/", rolesController.showRolesList); // Lista de roles
 router.get(
   "/new",
@@ -32,7 +32,7 @@ router.get(
   rolesController.showEditForm
 ); // Formulario de edición
 
-// ========== ACTION ROUTES (POST) ==========
+// ========== RUTAS DE ACCIÓN (POST) ==========
 router.post("/", checkPermiso("GESTIONAR ROLES"), rolesController.handleCreate); // Procesar creación
 router.post(
   "/:id/edit",

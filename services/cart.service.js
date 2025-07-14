@@ -27,16 +27,45 @@ const CartService = {
   },
 
   // Update item quantity
-  updateItemQuantity() {},
+  updateItemQuantity() { },
 
   // Clear cart
-  clearCart() {},
+  clearCartByUserId(userId) {
+    return cartModel.clearByUserId(userId);
+  },
 
-  // Get cart total
-  getCartTotal() {},
+  // Get cart total and items
+  getCartTotalAndItems(userId) {
+    const items = cartModel.getByUserId(userId);
+    const total = items.reduce((sum, item) => {
+      return sum + (parseFloat(item.price || 0) * parseInt(item.quantity || 0));
+    }, 0);
+
+    return {
+      items: items,
+      total: parseFloat(total.toFixed(2))
+    };
+  },
+
+  // Process purchase
+  processPurchase(userId, purchaseId, cartData) {
+    // Aquí podrías agregar lógica para guardar la compra en una tabla de órdenes
+    // Por ahora solo retornamos los datos procesados
+    return {
+      id: purchaseId,
+      userId: userId,
+      items: cartData.items,
+      total: cartData.total,
+      date: new Date(),
+      status: 'completed'
+    };
+  },
 
   // Get cart item count
-  getCartItemCount() {},
+  getCartItemCount(userId) {
+    const items = cartModel.getByUserId(userId);
+    return items.reduce((total, item) => total + parseInt(item.quantity || 0), 0);
+  },
 };
 
 module.exports = CartService;

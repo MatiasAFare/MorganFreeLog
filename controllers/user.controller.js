@@ -3,7 +3,7 @@ const RolService = require("../services/rol.service");
 const PermisoService = require("../services/permiso.service");
 
 const userController = {
-  // ========== API METHODS (JSON) ==========
+  // ========== MÉTODOS API (JSON) ==========
   getUsers: async (req, res) => {
     try {
       const users = await UserService.getAllUsers();
@@ -87,7 +87,7 @@ const userController = {
     }
   },
 
-  // ========== SHOW METHODS (Views) ==========
+  // ========== MÉTODOS DE VISTA (Vistas) ==========
   showUsersList: async (req, res) => {
     try {
       const users = await UserService.getAllUsers();
@@ -203,7 +203,7 @@ const userController = {
     }
   },
 
-  // ========== HANDLE METHODS (Actions) ==========
+  // ========== MÉTODOS DE MANEJO (Acciones) ==========
   handleCreate: async (req, res) => {
     try {
       const { name, email, password, rol_id } = req.body;

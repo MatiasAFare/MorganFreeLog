@@ -3,9 +3,8 @@ const router = express.Router();
 const shopController = require("../controllers/shop.controller");
 const { checkPermiso } = require("../middleware/checkPermiso.middleware");
 
-//VALIDAR SI FALTAN RUTAS, LUCAS, LAZARO Y MATIAS, SI FALTAN AGREGARLAS UWU
 
-// ========== API ROUTES (JSON) ==========
+// ========== RUTAS API (JSON) ==========
 router.get("/shop", shopController.getAllItems); // Obtener todos los items
 router.get("/shop/:id", shopController.getItemById); // Obtener un item por ID
 router.post(
@@ -24,7 +23,7 @@ router.delete(
   shopController.deleteItem
 ); // Eliminar un item
 
-// ========== VIEW ROUTES (HTML) ==========
+// ========== RUTAS DE VISTA (HTML) ==========
 router.get("/", shopController.showItemsList); // Lista de items
 router.get(
   "/items-new",
@@ -38,7 +37,7 @@ router.get(
   shopController.showEditForm
 ); // Formulario de edición
 
-// ========== ACTION ROUTES (POST) ==========
+// ========== RUTAS DE ACCIÓN (POST) ==========
 router.post("/", checkPermiso("GESTIONAR ITEMS"), shopController.handleCreate); // Procesar creación
 router.post(
   "/:id/edit",

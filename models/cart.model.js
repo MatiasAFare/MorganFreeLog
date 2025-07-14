@@ -24,12 +24,6 @@ const initCart = () => {
   }
 };
 
-// problema al iniciar la base de datos del carrito
-// cambiar por una solucion mejor
-setTimeout(() => {
-  initCart();
-}, 1000);
-
 const cartModel = {
   getByUserId: (user_id) => {
     const stmt = db.prepare(`
@@ -64,6 +58,12 @@ const cartModel = {
       "SELECT * FROM cart WHERE user_id = ? AND item_id = ?"
     );
     return stmt.get(user_id, item_id);
+  },
+
+  // Nuevo método para vaciar carrito completo por usuario
+  clearByUserId: (user_id) => {
+    const stmt = db.prepare("DELETE FROM cart WHERE user_id = ?");
+    return stmt.run(user_id);
   },
 };
 
