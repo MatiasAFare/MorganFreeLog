@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const permisosController = require("../controllers/permiso.controller");
+const permisosController = require("../controllers/permisos.controller");
 const { checkPermiso } = require("../middleware/checkPermiso.middleware");
 
 // ========== RUTAS API (JSON) ==========
