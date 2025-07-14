@@ -14,7 +14,7 @@ const initDb = () => {
             email TEXT UNIQUE NOT NULL,
             password TEXT NOT NULL,
             rol_id INTEGER,
-            FOREIGN KEY (rol_id) REFERENCES roles(id)
+            FOREIGN KEY (rol_id) REFERENCES roles(id) ON DELETE CASCADE
         )
     `
   ).run();
@@ -65,7 +65,20 @@ db.prepare(
 
 db.prepare(
   `
-    CREATE TABLE IF NOT EXISTS logs (
+    CREATE TABLE IF NOT EXISTS cart (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      item_id INTEGER NOT NULL,
+      quantity INTEGER NOT NULL,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+      FOREIGN KEY (item_id) REFERENCES items(id) ON DELETE CASCADE
+    )
+  `
+).run();
+
+db.prepare(
+  `
+      CREATE TABLE IF NOT EXISTS logs (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
       user_id INTEGER,
@@ -73,7 +86,7 @@ db.prepare(
       method TEXT NOT NULL,
       status INTEGER DEFAULT 0,
       message TEXT,
-      FOREIGN KEY (user_id) REFERENCES users(id)
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
     )
   `
 ).run();
