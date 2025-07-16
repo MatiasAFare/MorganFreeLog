@@ -3,6 +3,7 @@ const Rol = require('./rol.model');
 const Permiso = require('./permiso.model');
 const Item = require('./item.model');
 const Cart = require('./cart.model');
+const Log = require('./log.model');
 
 // Definir relaciones entre modelos
 const setupAssociations = () => {
@@ -32,6 +33,10 @@ const setupAssociations = () => {
   // Relación Cart -> Item (muchos a uno)
   Cart.belongsTo(Item, { foreignKey: 'item_id', as: 'item' });
   Item.hasMany(Cart, { foreignKey: 'item_id', as: 'enCarritos' });
+
+  // Relación Log -> User (muchos a uno)
+  Log.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
+  User.hasMany(Log, { foreignKey: 'user_id', as: 'logs' });
 };
 
 module.exports = { setupAssociations };
