@@ -1,4 +1,5 @@
 const Log = require("./sequelize/log.model");
+const User = require("./sequelize/user.model");
 const { Op } = require("sequelize");
 
 const logModelSequelize = {
@@ -42,29 +43,45 @@ const logModelSequelize = {
 
     const logs = await Log.findAll({
       where,
+      include: [{
+        model: User,
+        as: 'User', // Usar el alias definido en associations.js
+        attributes: ['name', 'email'],
+        required: false // LEFT JOIN para incluir logs sin usuario
+      }],
       order: [["timestamp", "DESC"]],
       limit: 500, // Limitar a los últimos 500 registros
       raw: true, // Para obtener objetos planos como en el modelo original
+      nest: true // Para estructurar los datos del JOIN
     });
 
-    // Simular los JOINs con users que tenía el modelo original
-    // Para mantener compatibilidad, agregar campos user_name y user_email como null
+    // Mapear los datos para mantener la estructura original
     return logs.map((log) => ({
       ...log,
-      user_name: null,
-      user_email: null,
+      user_name: log.User?.name || "Usuario anónimo",
+      user_email: log.User?.email || null,
     }));
   },
 
   getLogById: async (id) => {
-    const log = await Log.findByPk(id, { raw: true });
+    const log = await Log.findByPk(id, { 
+      include: [{
+        model: User,
+        as: 'User', // Usar el alias definido en associations.js
+        attributes: ['name', 'email'],
+        required: false // LEFT JOIN para incluir logs sin usuario
+      }],
+      raw: true,
+      nest: true
+    });
+    
     if (!log) return null;
 
-    // Simular el JOIN con users
+    // Mapear los datos para mantener la estructura original
     return {
       ...log,
-      user_name: null,
-      user_email: null,
+      user_name: log.User?.name || "Usuario anónimo",
+      user_email: log.User?.email || null,
     };
   },
 
