@@ -34,6 +34,32 @@ app.use((req, res, next) => {
   next();
 });
 
+// Middleware universal para detectar usuario autenticado (sin bloquear rutas públicas)
+app.use(async (req, res, next) => {
+  try {
+    // Intentar obtener user_id de la sesión
+    const userId = req.session?.user?.id || req.session?.userId || null;
+    
+    if (userId) {
+      // Si tenemos userId, obtener datos completos del usuario
+      const UserService = require("./services/user.service");
+      const user = await UserService.getUserById(userId);
+      
+      if (user) {
+        req.user = user;
+        console.log(`[Universal Auth] Usuario detectado: ${user.name} (ID: ${user.id})`);
+      } else {
+        console.log(`[Universal Auth] Usuario no encontrado en BD para ID: ${userId}`);
+      }
+    }
+    
+    next();
+  } catch (error) {
+    console.error("Error en middleware universal de auth:", error);
+    next(); // Continuar sin bloquear
+  }
+});
+
 // ========== MORGAN LOGGING ==========
 // Crear stream personalizado para escribir a BD
 const logStream = {
@@ -43,19 +69,19 @@ const logStream = {
       const cleanMessage = message.trim();
 
       // Extraer información del mensaje usando el formato personalizado
-      // Formato esperado: "METHOD|URL|STATUS|MESSAGE"
+      // Formato esperado: "METHOD|URL|STATUS|USERID|MESSAGE"
       const parts = cleanMessage.split("|");
-      if (parts.length >= 3) {
+      if (parts.length >= 4) {
         const method = parts[0];
         const url = parts[1];
         const status = parseInt(parts[2]) || 0;
-        const fullMessage = parts[3] || cleanMessage;
+        const userId = parts[3] === "null" ? null : parts[3];
+        const fullMessage = parts[4] || cleanMessage;
 
-        // Obtener user_id del request actual (si está disponible)
-        const user_id = global.currentUserId || null;
+        console.log(`[Log Write] URL: ${url}, Method: ${method}, User ID: ${userId}`);
 
         // Crear log en BD
-        await logService.createLog(user_id, url, method, status, fullMessage);
+        await logService.createLog(userId, url, method, status, fullMessage);
       }
     } catch (error) {
       console.error("Error al procesar log de Morgan:", error);
@@ -65,16 +91,33 @@ const logStream = {
 
 // Middleware para capturar user_id antes del logging
 app.use((req, res, next) => {
-  global.currentUserId = req.session?.user?.id || null;
+  // Obtener user_id de múltiples fuentes posibles (ahora req.user debería estar disponible)
+  const userId = req.user?.id || req.session?.user?.id || req.session?.userId || null;
+  global.currentUserId = userId;
+  
+  // Agregar el user_id al objeto request para acceso posterior
+  req.currentUserId = userId;
+  
   next();
 });
 
 // Configurar Morgan con formato personalizado
-morgan.token("userId", (req) => req.session?.user?.id || "anonymous");
+morgan.token("userId", (req) => {
+  // Intentar obtener user_id de múltiples fuentes
+  const userId = req.user?.id || req.session?.user?.id || req.session?.userId || req.currentUserId || null;
+  return userId || "anonymous";
+});
 
-// Formato personalizado: METHOD|URL|STATUS|FULL_MESSAGE
+// Crear token personalizado para user_id en el mensaje
+morgan.token("userIdForLog", (req) => {
+  const userId = req.user?.id || req.session?.user?.id || req.session?.userId || req.currentUserId || null;
+  global.currentUserId = userId; // Actualizar el global también
+  return userId || null;
+});
+
+// Formato personalizado: METHOD|URL|STATUS|USERID|FULL_MESSAGE
 const customFormat =
-  ":method|:url|:status|:remote-addr :method :url :status :res[content-length] - :response-time ms";
+  ":method|:url|:status|:userIdForLog|:remote-addr :method :url :status :res[content-length] - :response-time ms";
 
 app.use(morgan(customFormat, { stream: logStream }));
 app.use(morgan("dev")); // También mostrar en consola para desarrollo

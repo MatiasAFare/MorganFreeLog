@@ -34,6 +34,12 @@ const authController = {
       };
       req.session.isLoggedIn = true;
 
+      console.log("[Auth] Usuario logueado:", {
+        sessionUserId: req.session.userId,
+        sessionUser: req.session.user,
+        isLoggedIn: req.session.isLoggedIn
+      });
+
       req.session.save((err) => {
         if (err) console.error("Session save error:", err);
         return res.redirect("/");

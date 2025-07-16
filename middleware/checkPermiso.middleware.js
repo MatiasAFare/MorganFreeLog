@@ -99,11 +99,11 @@ const checkPermiso = (permisoRequerido) => {
         } catch (jwtError) {
           console.log('JWT inválido, intentando con sesión:', jwtError.message);
           // Si JWT falla, intentar con sesión tradicional
-          userId = req.session?.userId;
+          userId = req.session?.userId || req.session?.user?.id;
         }
       } else {
         // Fallback a sesión tradicional si no hay JWT
-        userId = req.session?.userId;
+        userId = req.session?.userId || req.session?.user?.id;
         console.log(`Usuario autenticado via sesión: ID ${userId}`);
       }
 
