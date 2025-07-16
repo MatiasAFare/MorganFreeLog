@@ -1,20 +1,5 @@
-const Rol = require('./sequelize/rol.model');
-
-// Función para inicializar roles por defecto
-const insertDefaultRoles = async () => {
-  const roles = ["administrador", "usuario"];
-  
-  for (const rolNombre of roles) {
-    try {
-      await Rol.findOrCreate({
-        where: { nombre: rolNombre },
-        defaults: { nombre: rolNombre }
-      });
-    } catch (error) {
-      console.error(`Error al crear rol ${rolNombre}:`, error.message);
-    }
-  }
-};
+const Rol = require("./sequelize/rol.model");
+const User = require("./sequelize/user.model");
 
 const rolModelSequelize = {
   getById: async (id) => {
@@ -24,7 +9,7 @@ const rolModelSequelize = {
 
   getAll: async () => {
     const roles = await Rol.findAll();
-    return roles.map(rol => rol.toJSON());
+    return roles.map((rol) => rol.toJSON());
   },
 
   create: async (nombre) => {
@@ -32,7 +17,7 @@ const rolModelSequelize = {
       const rol = await Rol.create({ nombre });
       return rol.toJSON();
     } catch (error) {
-      if (error.name === 'SequelizeUniqueConstraintError') {
+      if (error.name === "SequelizeUniqueConstraintError") {
         throw new Error("Ya existe un rol con ese nombre");
       }
       throw error;
@@ -41,19 +26,16 @@ const rolModelSequelize = {
 
   update: async (id, nombre) => {
     try {
-      const [updatedRows] = await Rol.update(
-        { nombre },
-        { where: { id } }
-      );
-      
+      const [updatedRows] = await Rol.update({ nombre }, { where: { id } });
+
       if (updatedRows === 0) {
         return null;
       }
-      
+
       const updatedRol = await rolModelSequelize.getById(id);
       return { ...updatedRol, changes: updatedRows };
     } catch (error) {
-      if (error.name === 'SequelizeUniqueConstraintError') {
+      if (error.name === "SequelizeUniqueConstraintError") {
         throw new Error("Ya existe un rol con ese nombre");
       }
       throw error;
@@ -66,14 +48,20 @@ const rolModelSequelize = {
   },
 
   getUsersByRolId: async (rolId) => {
-    // Esta función requiere importar User model, pero para evitar dependencia circular
-    // la manejaremos desde el service o cuando implementemos las relaciones
-    // Por ahora, devolvemos array vacío para mantener compatibilidad
-    return [];
-  }
+    try {
+      const rol = await Rol.findByPk(rolId, {
+        include: [{
+          model: User,
+          as: 'usuarios'
+        }]
+      });
+      
+      return rol ? rol.usuarios.map(u => u.toJSON()) : [];
+    } catch (error) {
+      console.error("Error al obtener usuarios por rol:", error.message);
+      return [];
+    }
+  },
 };
-
-// Inicializar roles por defecto
-insertDefaultRoles();
 
 module.exports = rolModelSequelize;

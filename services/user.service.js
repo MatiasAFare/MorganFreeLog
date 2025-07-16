@@ -15,7 +15,6 @@ const UserService = {
   },
 
   createUser: async (name, email, password, rol_id) => {
-    // Hashear la contraseña antes de almacenarla
     const hashedPassword = await passwordUtil.hashPassword(password);
     return await UserModel.createUser(name, email, hashedPassword, rol_id);
   },
@@ -35,14 +34,12 @@ const UserService = {
         throw new Error("Invalid credentials");
       }
 
-      // Verificar contraseña hasheada
       const isPasswordValid = await passwordUtil.verifyPassword(password, user.password);
       
       if (!isPasswordValid) {
         throw new Error("Invalid credentials");
       }
 
-      // Retornar usuario sin la contraseña por seguridad
       const { password: _, ...userWithoutPassword } = user;
       return userWithoutPassword;
     } catch (error) {

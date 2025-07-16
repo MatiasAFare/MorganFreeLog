@@ -1,54 +1,5 @@
-const User = require('./sequelize/user.model');
-const sequelize = require('../config/sequelize');
-const bcrypt = require('bcrypt');
-
-// Función para inicializar usuarios por defecto
-const insertDefaultUsers = async () => {
-  const users = [
-    {
-      name: "Administrador",
-      email: "admin@admin.com",
-      password: "admin123",
-      rol_id: 1
-    },
-    {
-      name: "Usuario",
-      email: "user@user.com", 
-      password: "user123",
-      rol_id: 2
-    }
-  ];
-  
-  for (const userData of users) {
-    try {
-      const existingUser = await User.findOne({ where: { email: userData.email } });
-      if (!existingUser) {
-        // Hash de la contraseña
-        const hashedPassword = await bcrypt.hash(userData.password, 10);
-        
-        await User.create({
-          ...userData,
-          password: hashedPassword
-        });
-      }
-    } catch (error) {
-      console.error(`Error al crear usuario ${userData.email}:`, error.message);
-    }
-  }
-};
-
-const initUsers = async () => {
-  try {
-    const count = await User.count();
-    if (count === 0) {
-      console.log("Semillando la base de datos con usuarios por defecto...");
-      await insertDefaultUsers();
-    }
-  } catch (error) {
-    console.error("Error al inicializar usuarios:", error.message);
-  }
-};
-
+const User = require("./sequelize/user.model");
+const Rol = require("./sequelize/rol.model");
 const userModelSequelize = {
   getUserById: async (id) => {
     const user = await User.findByPk(id);
@@ -57,7 +8,7 @@ const userModelSequelize = {
 
   getAllUsers: async () => {
     const users = await User.findAll();
-    return users.map(user => user.toJSON());
+    return users.map((user) => user.toJSON());
   },
 
   createUser: async (name, email, password, rol_id) => {
@@ -70,11 +21,11 @@ const userModelSequelize = {
       { name, email, rol_id },
       { where: { id } }
     );
-    
+
     if (updatedRows === 0) {
       return null;
     }
-    
+
     return await userModelSequelize.getUserById(id);
   },
 
@@ -84,27 +35,31 @@ const userModelSequelize = {
   },
 
   getUserWithRole: async (id) => {
-    const user = await sequelize.query(
-      `SELECT u.*, r.nombre as rol_nombre 
-       FROM users u
-       LEFT JOIN roles r ON u.rol_id = r.id
-       WHERE u.id = ?`,
-      {
-        replacements: [id],
-        type: sequelize.QueryTypes.SELECT
-      }
-    );
-    
-    return user.length > 0 ? user[0] : null;
+    try {
+      const user = await User.findByPk(id, {
+        include: [{
+          model: Rol,
+          as: 'rol'
+        }]
+      });
+      
+      if (!user) return null;
+      
+      const userData = user.toJSON();
+      return {
+        ...userData,
+        rol_nombre: userData.rol ? userData.rol.nombre : null
+      };
+    } catch (error) {
+      console.error("Error al obtener usuario con rol:", error.message);
+      return null;
+    }
   },
 
   getUserByEmail: async (email) => {
     const user = await User.findOne({ where: { email } });
     return user ? user.toJSON() : null;
-  }
+  },
 };
-
-// Inicializar usuarios por defecto
-initUsers();
 
 module.exports = userModelSequelize;

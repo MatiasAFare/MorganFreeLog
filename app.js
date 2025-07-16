@@ -5,7 +5,7 @@ const path = require("path");
 const session = require("express-session");
 const morgan = require("morgan");
 const logService = require("./services/log.service");
-require("./database");
+const { initializeDatabase } = require("./config/database.init");
 
 const app = express();
 
@@ -99,6 +99,19 @@ app.use((req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+
+// Inicializar base de datos y arrancar servidor
+const startServer = async () => {
+  try {
+    await initializeDatabase();
+    
+    app.listen(PORT, () => {
+      console.log(`🚀 Server is running on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error("❌ Error al iniciar servidor:", error.message);
+    process.exit(1);
+  }
+};
+
+startServer();

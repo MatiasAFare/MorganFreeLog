@@ -6,7 +6,6 @@ const logService = {
       return await logModel.createLog(user_id, endpoint, method, status, message);
     } catch (error) {
       console.error("Error al crear log:", error);
-      // No lanzamos error para no interrumpir el flujo normal de la app
     }
   },
 
