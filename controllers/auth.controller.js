@@ -17,32 +17,57 @@ const authController = {
         });
       }
 
+      console.log("[Auth] Intentando login para:", email);
+      
       const user = await UserService.loginUser(email, password);
       if (!user) {
+        console.log("[Auth] Login fallido - credenciales inválidas");
         return res.render("auth/login", {
           title: "Login",
           error: "Credenciales inválidas"
         });
       }
 
-      req.session.userId = user.id;
-      req.session.user = {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        rol_id: user.rol_id
-      };
-      req.session.isLoggedIn = true;
+      console.log("[Auth] Usuario autenticado exitosamente:", user.name);
 
-      console.log("[Auth] Usuario logueado:", {
-        sessionUserId: req.session.userId,
-        sessionUser: req.session.user,
-        isLoggedIn: req.session.isLoggedIn
-      });
+      // Limpiar sesión anterior completamente
+      req.session.regenerate((err) => {
+        if (err) {
+          console.error("Error regenerando sesión:", err);
+          return res.render("auth/login", {
+            title: "Login",
+            error: "Error al iniciar sesión"
+          });
+        }
 
-      req.session.save((err) => {
-        if (err) console.error("Session save error:", err);
-        return res.redirect("/");
+        // Setear datos de sesión
+        req.session.userId = user.id;
+        req.session.user = {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          rol_id: user.rol_id
+        };
+        req.session.isLoggedIn = true;
+
+        console.log("[Auth] Sesión creada:", {
+          sessionUserId: req.session.userId,
+          sessionUser: req.session.user,
+          isLoggedIn: req.session.isLoggedIn
+        });
+
+        // Guardar sesión explícitamente
+        req.session.save((err) => {
+          if (err) {
+            console.error("Error guardando sesión:", err);
+            return res.render("auth/login", {
+              title: "Login",
+              error: "Error al iniciar sesión"
+            });
+          }
+          console.log("[Auth] Sesión guardada exitosamente");
+          return res.redirect("/");
+        });
       });
     } catch (error) {
       return res.render("auth/login", {
@@ -95,13 +120,26 @@ const authController = {
     if (!req.session.userId) {
       return res.redirect('/auth/login');
     }
+    
+    console.log("[Auth] Cerrando sesión para usuario:", req.session.user?.name);
+    
+    // Limpiar todas las variables de sesión antes de destruir
+    req.session.userId = null;
+    req.session.user = null;
+    req.session.isLoggedIn = false;
+    
     req.session.destroy((err) => {
       if (err) {
+        console.error("Error al destruir sesión:", err);
         return res.status(500).render('error', {
           message: 'Error al cerrar sesión',
           error: err
         });
       }
+      
+      res.clearCookie('connect.sid');
+      console.log("[Auth] Sesión cerrada exitosamente");
+      
       return res.redirect('/auth/login');
     });
   },

@@ -29,7 +29,8 @@ app.use(
 );
 
 app.use((req, res, next) => {
-  res.locals.user = req.session.user || null;
+  // Solo setear user si la sesión está realmente activa
+  res.locals.user = req.session.isLoggedIn ? req.session.user : null;
   res.locals.isLoggedIn = !!req.session.isLoggedIn;
   next();
 });
@@ -37,6 +38,12 @@ app.use((req, res, next) => {
 // Middleware universal para detectar usuario autenticado (sin bloquear rutas públicas)
 app.use(async (req, res, next) => {
   try {
+    // Verificar si la sesión realmente está activa
+    if (!req.session.isLoggedIn) {
+      req.user = null;
+      return next();
+    }
+    
     // Intentar obtener user_id de la sesión
     const userId = req.session?.user?.id || req.session?.userId || null;
     
@@ -49,13 +56,19 @@ app.use(async (req, res, next) => {
         req.user = user;
         console.log(`[Universal Auth] Usuario detectado: ${user.name} (ID: ${user.id})`);
       } else {
-        console.log(`[Universal Auth] Usuario no encontrado en BD para ID: ${userId}`);
+        // Si el usuario no existe en BD, limpiar sesión
+        console.log(`[Universal Auth] Usuario no encontrado en BD para ID: ${userId}, limpiando sesión`);
+        req.session.destroy();
+        req.user = null;
       }
+    } else {
+      req.user = null;
     }
     
     next();
   } catch (error) {
     console.error("Error en middleware universal de auth:", error);
+    req.user = null;
     next(); // Continuar sin bloquear
   }
 });
@@ -75,7 +88,8 @@ const logStream = {
         const method = parts[0];
         const url = parts[1];
         const status = parseInt(parts[2]) || 0;
-        const userId = parts[3] === "null" ? null : parts[3];
+        const userIdStr = parts[3];
+        const userId = userIdStr === "null" ? null : parseInt(userIdStr) || null;
         const fullMessage = parts[4] || cleanMessage;
 
         console.log(`[Log Write] URL: ${url}, Method: ${method}, User ID: ${userId}`);
@@ -112,7 +126,7 @@ morgan.token("userId", (req) => {
 morgan.token("userIdForLog", (req) => {
   const userId = req.user?.id || req.session?.user?.id || req.session?.userId || req.currentUserId || null;
   global.currentUserId = userId; // Actualizar el global también
-  return userId || null;
+  return userId !== null ? userId : "null";
 });
 
 // Formato personalizado: METHOD|URL|STATUS|USERID|FULL_MESSAGE
