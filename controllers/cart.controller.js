@@ -1,4 +1,5 @@
 const cartService = require("../services/cart.service");
+const itemModel = require("../models/item.model");
 
 const cartController = {
   // ========== MÉTODOS API (JSON) ==========
@@ -111,6 +112,42 @@ const cartController = {
 
       if (!cartData.items || cartData.items.length === 0) {
         return res.status(400).json({ message: "Carrito vacío" });
+      }
+
+      // VERIFICAR STOCK DISPONIBLE ANTES DE PROCESAR LA COMPRA
+      const stockValidation = [];
+      for (const cartItem of cartData.items) {
+        const currentItem = itemModel.getById(cartItem.item_id);
+        if (!currentItem) {
+          return res.status(400).json({
+            message: `El producto "${cartItem.name}" ya no está disponible`
+          });
+        }
+
+        if (currentItem.stock < cartItem.quantity) {
+          stockValidation.push({
+            name: cartItem.name,
+            requested: cartItem.quantity,
+            available: currentItem.stock
+          });
+        }
+      }
+
+      // Si hay problemas de stock, devolver error
+      if (stockValidation.length > 0) {
+        return res.status(400).json({
+          message: "Stock insuficiente para algunos productos",
+          stockIssues: stockValidation
+        });
+      }
+
+      // REDUCIR STOCK DE CADA PRODUCTO
+      for (const cartItem of cartData.items) {
+        const currentItem = itemModel.getById(cartItem.item_id);
+        const newStock = currentItem.stock - cartItem.quantity;
+
+        // Actualizar el stock del producto
+        itemModel.updateItem(cartItem.item_id, { stock: newStock });
       }
 
       // Procesar la compra (aquí podrías agregar lógica de pago real)
