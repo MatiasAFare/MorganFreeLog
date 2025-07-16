@@ -1,4 +1,4 @@
-const cartModel = require("../models/cart.model");
+const cartModel = require("../models/cart.model.sequelize");
 
 const CartService = {
   // Get cart items

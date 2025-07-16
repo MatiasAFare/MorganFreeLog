@@ -1,4 +1,4 @@
-const PermisoModel = require('../models/permiso.model');
+const PermisoModel = require('../models/permiso.model.sequelize');
 
 const PermisoService = {
     getById: async (id) => {

@@ -1,14 +1,14 @@
-const itemModel = require("../models/item.model.js");
+const itemModel = require("../models/item.model.sequelize.js");
 
 const shopService = {
   getAllItems: async (filters) => {
-    return itemModel.getAll(filters);
+    return await itemModel.getAll(filters);
   },
-  getItemById: (id) => {
-    return itemModel.getById(id);
+  getItemById: async (id) => {
+    return await itemModel.getById(id);
   },
   createItem: async (name, price, stock, category) => {
-    return itemModel.create(name, price, stock, category);
+    return await itemModel.create(name, price, stock, category);
   },
   updateItem: async (id, itemData) => {
     try {
@@ -32,8 +32,8 @@ const shopService = {
       throw error;
     }
   },
-  deleteItem: (id) => {
-    const item = itemModel.getById(id);
+  deleteItem: async (id) => {
+    const item = await itemModel.getById(id);
     if (!item) {
       return {
         success: false,
@@ -42,7 +42,7 @@ const shopService = {
     }
 
     try {
-      const result = itemModel.delete(id);
+      const result = await itemModel.delete(id);
       if (result.changes > 0) {
         return {
           success: true,
@@ -62,8 +62,8 @@ const shopService = {
       };
     }
   },
-  getCategories: () => {
-    return itemModel.getCategories();
+  getCategories: async () => {
+    return await itemModel.getCategories();
   },
 };
 module.exports = shopService;

@@ -1,31 +1,31 @@
-const UserModel = require("../models/user.model");
+const UserModel = require("../models/user.model.sequelize");
 const passwordUtil = require("../utils/password.util");
 
 const UserService = {
   getAllUsers: async () => {
-    return UserModel.getAllUsers();
+    return await UserModel.getAllUsers();
   },
 
   getUserById: async (id) => {
-    return UserModel.getUserById(id);
+    return await UserModel.getUserById(id);
   },
 
   getUserWithRole: async (id) => {
-    return UserModel.getUserWithRole(id);
+    return await UserModel.getUserWithRole(id);
   },
 
   createUser: async (name, email, password, rol_id) => {
     // Hashear la contraseña antes de almacenarla
     const hashedPassword = await passwordUtil.hashPassword(password);
-    return UserModel.createUser(name, email, hashedPassword, rol_id);
+    return await UserModel.createUser(name, email, hashedPassword, rol_id);
   },
 
   updateUser: async (id, name, email, rol_id) => {
-    return UserModel.updateUser(id, name, email, rol_id);
+    return await UserModel.updateUser(id, name, email, rol_id);
   },
 
   deleteUser: async (id) => {
-    return UserModel.deleteUser(id);
+    return await UserModel.deleteUser(id);
   },
 
   loginUser: async (email, password) => {
