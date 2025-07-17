@@ -168,7 +168,8 @@ const permisoController = {
       const permiso = await PermisoService.create(nombre, descripcion);
 
       if (roles) {
-        const roleIds = Array.isArray(roles) ? roles : [roles];
+        // TODO: Validar caso con 1 solo rol
+        //const roleIds = Array.isArray(roles) ? roles : [roles];
 
         for (const rolId of roleIds) {
           await PermisoService.assignToRole(rolId, permiso.id);

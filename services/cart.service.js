@@ -20,12 +20,10 @@ const CartService = {
     return await cartModel.delete(itemId);
   },
 
-  async updateItemQuantity() {},
-
   async clearCartByUserId(userId) {
     return await cartModel.clearByUserId(userId);
   },
-
+  
   async getCartTotalAndItems(userId) {
     const items = await cartModel.getByUserId(userId);
     const total = items.reduce((sum, item) => {
@@ -47,14 +45,6 @@ const CartService = {
       date: new Date(),
       status: "completed",
     };
-  },
-
-  getCartItemCount(userId) {
-    const items = cartModel.getByUserId(userId);
-    return items.reduce(
-      (total, item) => total + parseInt(item.quantity || 0),
-      0
-    );
   },
 };
 

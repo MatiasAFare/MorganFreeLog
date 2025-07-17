@@ -4,9 +4,8 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const path = require("path");
 const session = require("express-session");
-const morgan = require("morgan");
-const logService = require("./services/log.service");
 const { initializeDatabase } = require("./config/database.init");
+const { setupMorganMiddleware } = require("./config/morgan.config");
 
 const app = express();
 
@@ -35,90 +34,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// Authentication middleware
-app.use(async (req, res, next) => {
-  try {
-    if (!req.session.isLoggedIn) {
-      req.user = null;
-      return next();
-    }
-    
-    const userId = req.session?.user?.id || req.session?.userId || null;
-    
-    if (userId) {
-      const UserService = require("./services/user.service");
-      const user = await UserService.getUserById(userId);
-      
-      if (user) {
-        req.user = user;
-        console.log(`[Universal Auth] Usuario detectado: ${user.name} (ID: ${user.id})`);
-      } else {
-        console.log(`[Universal Auth] Usuario no encontrado en BD para ID: ${userId}, limpiando sesión`);
-        req.session.destroy();
-        req.user = null;
-      }
-    } else {
-      req.user = null;
-    }
-    
-    next();
-  } catch (error) {
-    console.error("Error en middleware universal de auth:", error);
-    req.user = null;
-    next();
-  }
-});
-
-// Morgan logging configuration
-const logStream = {
-  write: async (message) => {
-    try {
-      const cleanMessage = message.trim();
-
-      const parts = cleanMessage.split("|");
-      if (parts.length >= 4) {
-        const method = parts[0];
-        const url = parts[1];
-        const status = parseInt(parts[2]) || 0;
-        const userIdStr = parts[3];
-        const userId = userIdStr === "null" ? null : parseInt(userIdStr) || null;
-        const fullMessage = parts[4] || cleanMessage;
-
-        console.log(`[Log Write] URL: ${url}, Method: ${method}, User ID: ${userId}`);
-
-        await logService.createLog(userId, url, method, status, fullMessage);
-      }
-    } catch (error) {
-      console.error("Error al procesar log de Morgan:", error);
-    }
-  },
-};
-
-app.use((req, res, next) => {
-  const userId = req.user?.id || req.session?.user?.id || req.session?.userId || null;
-  global.currentUserId = userId;
-  
-  req.currentUserId = userId;
-  
-  next();
-});
-
-morgan.token("userId", (req) => {
-  const userId = req.user?.id || req.session?.user?.id || req.session?.userId || req.currentUserId || null;
-  return userId || "anonymous";
-});
-
-morgan.token("userIdForLog", (req) => {
-  const userId = req.user?.id || req.session?.user?.id || req.session?.userId || req.currentUserId || null;
-  global.currentUserId = userId;
-  return userId !== null ? userId : "null";
-});
-
-const customFormat =
-  ":method|:url|:status|:userIdForLog|:remote-addr :method :url :status :res[content-length] - :response-time ms";
-
-app.use(morgan(customFormat, { stream: logStream }));
-app.use(morgan("dev"));
+setupMorganMiddleware(app);
 
 app.use("/usuarios", require("./routes/user.routes"));
 app.use("/roles", require("./routes/roles.routes"));
@@ -144,7 +60,7 @@ const PORT = process.env.PORT || 3000;
 const startServer = async () => {
   try {
     await initializeDatabase();
-    
+
     app.listen(PORT, () => {
       console.log(`🚀 Server is running on port ${PORT}`);
     });
