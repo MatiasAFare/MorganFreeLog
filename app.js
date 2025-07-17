@@ -43,10 +43,9 @@ app.use("/auth", require("./routes/auth.routes"));
 app.use("/shop", require("./routes/shop.routes"));
 app.use("/cart", require("./routes/cart.routes"));
 app.use("/logs", require("./routes/log.routes"));
+app.use("/api/quotes", require("./routes/quote.routes"));
 
-app.get("/", (req, res) => {
-  res.render("index");
-});
+app.get("/", require("./controllers/quote.controller").showIndexWithQuote);
 
 app.use((req, res) => {
   res.status(404).render("error", {

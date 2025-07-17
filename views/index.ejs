@@ -32,9 +32,96 @@
       margin: 0 auto;
       display: block;
     }
+    
+    /* Estilos para la sección de frases en el overlay */
+    .quote-container {
+      position: absolute;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80%;
+      max-width: 600px;
+      text-align: center;
+      color: white;
+      opacity: 0;
+      animation: fadeInQuote 0.8s ease-in-out 1.5s forwards;
+    }
+    
+    .quote-icon {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 4em;
+      font-weight: bold;
+      line-height: 0.6;
+      margin-bottom: 15px;
+      color: rgba(255, 255, 255, 0.8);
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    }
+    
+    .quote-text {
+      font-size: 1.1em;
+      line-height: 1.4;
+      margin-bottom: 15px;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+      padding: 0 20px;
+    }
+    
+    .quote-text em {
+      font-style: italic;
+      color: rgba(255, 255, 255, 0.95);
+    }
+    
+    .quote-author {
+      font-size: 0.9em;
+      color: rgba(255, 255, 255, 0.8);
+      font-weight: 500;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    }
+    
+    @keyframes fadeInQuote {
+      from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+    }
+    
+    /* Responsive para dispositivos móviles */
+    @media (max-width: 768px) {
+      .quote-container {
+        width: 90%;
+        bottom: 60px;
+      }
+      
+      .quote-icon {
+        font-size: 3em;
+      }
+      
+      .quote-text {
+        font-size: 1em;
+        padding: 0 15px;
+      }
+    }
   </style>
 
   <body>
+    <!-- Overlay para la transición -->
+    <div class="screen-blackout" id="screenBlackout"></div>
+    <div class="page-transition-overlay" id="pageTransitionOverlay">
+      <img src="/morganshop.png" alt="MorganShop Logo" class="transition-logo" />
+      <div class="transition-text">Cargando...</div>
+      <div class="loading-spinner"></div>
+      <div class="quote-container">
+        <div class="quote-icon">"</div>
+        <div class="quote-text" id="quoteText">
+          <em><%= randomQuote.quote %></em>
+        </div>
+        <div class="quote-author">- <%= randomQuote.author %></div>
+      </div>
+    </div>
+
     <div class="container">
       <div class="header">
         <h1>Morgan Freelog</h1>
@@ -45,14 +132,14 @@
       <div class="menu">
         <h2>Menú Principal</h2>
         <ul>
-          <li><a href="/usuarios">Gestión de Usuarios</a></li>
-          <li><a href="/roles">Gestión de Roles</a></li>
-          <li><a href="/permisos">Gestión de Permisos</a></li>
-          <li><a href="/shop">Tienda</a></li>
-          <li><a href="/logs">Logs del Sistema</a></li>
+          <li><a href="/usuarios" class="nav-link">Gestión de Usuarios</a></li>
+          <li><a href="/roles" class="nav-link">Gestión de Roles</a></li>
+          <li><a href="/permisos" class="nav-link">Gestión de Permisos</a></li>
+          <li><a href="/shop" class="nav-link">Tienda</a></li>
+          <li><a href="/logs" class="nav-link">Logs del Sistema</a></li>
           <% if (locals.isLoggedIn) { %>
             <li>
-              <a href="/cart">Mi Carrito de Compras</a>
+              <a href="/cart" class="nav-link">Mi Carrito de Compras</a>
             </li>
           <li>
             <form action="/auth/logout" method="POST" class="logout-form">
@@ -60,11 +147,49 @@
             </form>
           </li>
           <% } else { %>
-          <li><a href="/auth/login">Iniciar Sesión</a></li>
-          <li><a href="/auth/register">Registro de Usuario</a></li>
+          <li><a href="/auth/login" class="nav-link">Iniciar Sesión</a></li>
+          <li><a href="/auth/register" class="nav-link">Registro de Usuario</a></li>
           <% } %>
         </ul>
       </div>
     </div>
+
+    <script>
+      // JavaScript para la animación de transición
+      // La frase inicial ahora viene renderizada desde el servidor (randomQuote)
+      document.addEventListener('DOMContentLoaded', function() {
+        const navLinks = document.querySelectorAll('.nav-link');
+        const screenBlackout = document.getElementById('screenBlackout');
+        const pageTransitionOverlay = document.getElementById('pageTransitionOverlay');
+        
+        // No cargar frase inicial, ya viene del servidor
+        
+        navLinks.forEach(link => {
+          link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetUrl = this.getAttribute('href');
+            
+            // Iniciar animación de transición
+            startPageTransition(targetUrl);
+          });
+        });
+        
+        function startPageTransition(targetUrl) {
+          
+          // Paso 1: Activar pantalla negra
+          screenBlackout.classList.add('active');
+          
+          // Paso 2: Después de 0.8s, mostrar overlay con logo
+          setTimeout(() => {
+            pageTransitionOverlay.classList.add('active');
+            
+            // Paso 3: Después de 3.5s, navegar a la nueva página
+            setTimeout(() => {
+              window.location.href = targetUrl;
+            }, 3500);
+          }, 800);
+        }
+      });
+    </script>
   </body>
 </html>
