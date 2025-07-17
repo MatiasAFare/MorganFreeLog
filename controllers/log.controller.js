@@ -1,7 +1,8 @@
+// Log controller
 const logService = require("../services/log.service");
 
 const logController = {
-  // ========== VIEW METHODS ==========
+  // ========== MÉTODOS VISTA (Vistas) ==========
   showLogsList: async (req, res) => {
     try {
       const filters = req.query;
@@ -44,7 +45,6 @@ const logController = {
     }
   },
 
-  // ========== MÉTODOS API ==========
   exportLogsToTxt: async (req, res) => {
     try {
       const filters = req.query;
@@ -79,6 +79,7 @@ const logController = {
     }
   },
 
+  // ========== MÉTODOS MANEJO (Acciones) ==========
   cleanOldLogs: async (req, res) => {
     try {
       const daysToKeep = req.body.days || 30;

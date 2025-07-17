@@ -1,8 +1,8 @@
+// Shop routes
 const express = require("express");
 const router = express.Router();
 const shopController = require("../controllers/shop.controller");
 const { checkPermiso } = require("../middleware/checkPermiso.middleware");
-
 
 // ========== RUTAS API (JSON) ==========
 router.get("/shop", shopController.getAllItems); // Obtener todos los items
@@ -24,13 +24,13 @@ router.delete(
 ); // Eliminar un item
 
 // ========== RUTAS DE VISTA (HTML) ==========
-router.get("/", shopController.showItemsList); // Lista de items
+router.get("/", checkPermiso("LOGIN"), shopController.showItemsList); // Lista de items
 router.get(
   "/items-new",
   checkPermiso("GESTIONAR ITEMS"),
   shopController.showCreateForm
 ); // Formulario de creación
-router.get("/:id", shopController.showDetails); // Ver detalles de un item
+router.get("/:id", checkPermiso("LOGIN"), shopController.showDetails); // Ver detalles de un item
 router.get(
   "/:id/edit",
   checkPermiso("GESTIONAR ITEMS"),

@@ -1,16 +1,11 @@
+// Permission middleware
 const jwt = require('jsonwebtoken');
 const UserService = require("../services/user.service");
 const PermisoService = require("../services/permiso.service");
 
-// Configuración JWT
 const JWT_SECRET = process.env.JWT_SECRET || 'morganafreelog-super-secret-key-2025';
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '24h';
 
-/**
- * Generar JWT token
- * @param {Object} user - Datos del usuario
- * @returns {string} JWT token
- */
 const generateToken = (user) => {
   const payload = {
     userId: user.id,
@@ -27,11 +22,6 @@ const generateToken = (user) => {
   });
 };
 
-/**
- * Verificar JWT token
- * @param {string} token - JWT token
- * @returns {Object} Payload decodificado
- */
 const verifyToken = (token) => {
   try {
     return jwt.verify(token, JWT_SECRET);
@@ -46,11 +36,6 @@ const verifyToken = (token) => {
   }
 };
 
-/**
- * Extraer token del request
- * @param {Object} req - Request object
- * @returns {string|null} Token o null si no existe
- */
 const extractToken = (req) => {
   // 1. Buscar token en header Authorization (Bearer token)
   const authHeader = req.headers.authorization;
@@ -63,7 +48,7 @@ const extractToken = (req) => {
     return req.cookies.authToken;
   }
 
-  // 3. Buscar token en session (fallback para compatibilidad)
+  // 3. Buscar token en session (fallback para compatibilidad para requests api)
   if (req.session && req.session.authToken) {
     return req.session.authToken;
   }
@@ -71,10 +56,6 @@ const extractToken = (req) => {
   return null;
 };
 
-/**
- * Middleware para verificar si un usuario tiene un permiso específico
- * @param {string} permisoRequerido - Nombre del permiso requerido
- */
 const checkPermiso = (permisoRequerido) => {
   return async (req, res, next) => {
     try {
@@ -98,12 +79,10 @@ const checkPermiso = (permisoRequerido) => {
           console.log(`Usuario autenticado via JWT: ${user.email} (ID: ${userId})`);
         } catch (jwtError) {
           console.log('JWT inválido, intentando con sesión:', jwtError.message);
-          // Si JWT falla, intentar con sesión tradicional
-          userId = req.session?.userId;
+          userId = req.session?.userId || req.session?.user?.id;
         }
       } else {
-        // Fallback a sesión tradicional si no hay JWT
-        userId = req.session?.userId;
+        userId = req.session?.userId || req.session?.user?.id;
         console.log(`Usuario autenticado via sesión: ID ${userId}`);
       }
 
@@ -120,7 +99,6 @@ const checkPermiso = (permisoRequerido) => {
         }
       }
 
-      // Si no tenemos datos del usuario del JWT, obtenerlos de la BD
       if (!user) {
         user = await UserService.getUserById(userId);
         if (!user) {
@@ -154,7 +132,6 @@ const checkPermiso = (permisoRequerido) => {
         }
       }
 
-      // Agregar datos del usuario al request para uso posterior
       req.user = user;
       req.userPermissions = permisos;
 

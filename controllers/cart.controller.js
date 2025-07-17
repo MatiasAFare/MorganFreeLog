@@ -1,8 +1,9 @@
+// Cart controller
 const cartService = require("../services/cart.service");
-const itemModel = require("../models/item.model");
+const itemModel = require("../models/item.model.sequelize");
 
 const cartController = {
-  // ========== MÉTODOS API (JSON) ==========
+  // ========== MÉTODOS DE API (JSON) ==========
   getAllItems: async (req, res) => {
     try {
       const userId = req.session.userId || req.user.id || null;
@@ -34,7 +35,6 @@ const cartController = {
     }
   },
 
-  // NUEVA FUNCIONALIDAD: Vaciar carrito completo
   clearCart: async (req, res) => {
     try {
       const userId = req.session.userId || req.user?.id || null;
@@ -59,7 +59,6 @@ const cartController = {
     }
   },
 
-  // NUEVA FUNCIONALIDAD: Obtener total del carrito para modal
   getCartTotal: async (req, res) => {
     try {
       const userId = req.session.userId || req.user?.id || null;
@@ -93,7 +92,6 @@ const cartController = {
     }
   },
 
-  // NUEVA FUNCIONALIDAD: Procesar pago/compra
   processPurchase: async (req, res) => {
     try {
       const { purchaseId } = req.body;
@@ -114,43 +112,41 @@ const cartController = {
         return res.status(400).json({ message: "Carrito vacío" });
       }
 
-      // VERIFICAR STOCK DISPONIBLE ANTES DE PROCESAR LA COMPRA
-      const stockValidation = [];
-      for (const cartItem of cartData.items) {
-        const currentItem = itemModel.getById(cartItem.item_id);
-        if (!currentItem) {
+        // VERIFICAR STOCK DISPONIBLE ANTES DE PROCESAR LA COMPRA
+        const stockValidation = [];
+        for (const cartItem of cartData.items) {
+          const currentItem = await itemModel.getById(cartItem.item_id);
+          if (!currentItem) {
+            return res.status(400).json({
+              message: `El producto "${cartItem.name}" ya no está disponible`
+            });
+          }
+
+          if (currentItem.stock < cartItem.quantity) {
+            stockValidation.push({
+              name: cartItem.name,
+              requested: cartItem.quantity,
+              available: currentItem.stock
+            });
+          }
+        }
+
+        // Si hay problemas de stock, devolver error
+        if (stockValidation.length > 0) {
           return res.status(400).json({
-            message: `El producto "${cartItem.name}" ya no está disponible`
+            message: "Stock insuficiente para algunos productos",
+            stockIssues: stockValidation
           });
         }
 
-        if (currentItem.stock < cartItem.quantity) {
-          stockValidation.push({
-            name: cartItem.name,
-            requested: cartItem.quantity,
-            available: currentItem.stock
-          });
-        }
-      }
+        // REDUCIR STOCK DE CADA PRODUCTO
+        for (const cartItem of cartData.items) {
+          const currentItem = await itemModel.getById(cartItem.item_id);
+          const newStock = currentItem.stock - cartItem.quantity;
 
-      // Si hay problemas de stock, devolver error
-      if (stockValidation.length > 0) {
-        return res.status(400).json({
-          message: "Stock insuficiente para algunos productos",
-          stockIssues: stockValidation
-        });
-      }
-
-      // REDUCIR STOCK DE CADA PRODUCTO
-      for (const cartItem of cartData.items) {
-        const currentItem = itemModel.getById(cartItem.item_id);
-        const newStock = currentItem.stock - cartItem.quantity;
-
-        // Actualizar el stock del producto
-        itemModel.updateItem(cartItem.item_id, { stock: newStock });
-      }
-
-      // Procesar la compra (aquí podrías agregar lógica de pago real)
+          // Actualizar el stock del producto
+          await itemModel.updateItem(cartItem.item_id, { stock: newStock });
+        }      // Procesar la compra (aquí podrías agregar lógica de pago real)
       const purchase = await cartService.processPurchase(userId, purchaseId, cartData);
 
       // Vaciar el carrito después de la compra exitosa
@@ -226,6 +222,7 @@ const cartController = {
       res.redirect("/shop?error=Error al agregar el producto al carrito");
     }
   },
+  
   handleDelete: async (req, res) => {
     try {
       const { id } = req.params;
@@ -240,6 +237,7 @@ const cartController = {
       res.redirect(`/cart?error=${encodeURIComponent(error.message)}`);
     }
   },
+
   // NUEVA FUNCIONALIDAD: Manejar vaciar carrito desde vista
   handleClearCart: async (req, res) => {
     try {
@@ -261,6 +259,7 @@ const cartController = {
       res.redirect(`/cart?error=${encodeURIComponent("Error al vaciar el carrito")}`);
     }
   },
+
 };
 
 module.exports = cartController;

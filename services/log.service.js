@@ -1,25 +1,25 @@
-const logModel = require("../models/log.model");
+// Log service
+const logModel = require("../models/log.model.sequelize");
 
 const logService = {
   createLog: async (user_id, endpoint, method, status, message = null) => {
     try {
-      return logModel.createLog(user_id, endpoint, method, status, message);
+      return await logModel.createLog(user_id, endpoint, method, status, message);
     } catch (error) {
       console.error("Error al crear log:", error);
-      // No lanzamos error para no interrumpir el flujo normal de la app
     }
   },
 
   getAllLogs: async (filters = {}) => {
-    return logModel.getAllLogs(filters);
+    return await logModel.getAllLogs(filters);
   },
 
   getLogById: async (id) => {
-    return logModel.getLogById(id);
+    return await logModel.getLogById(id);
   },
-
+  //TODO: Implementar autoborrado / borrado de logs antiguos
   cleanOldLogs: async (daysToKeep = 30) => {
-    return logModel.deleteOldLogs(daysToKeep);
+    return await logModel.deleteOldLogs(daysToKeep);
   }
 };
 
