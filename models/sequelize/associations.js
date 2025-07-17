@@ -1,3 +1,4 @@
+// Database associations
 const User = require('./user.model');
 const Rol = require('./rol.model');
 const Permiso = require('./permiso.model');
@@ -5,9 +6,7 @@ const Item = require('./item.model');
 const Cart = require('./cart.model');
 const Log = require('./log.model');
 
-// Definir relaciones entre modelos
 const setupAssociations = () => {
-  // Relación User -> Rol (muchos a uno)
   User.belongsTo(Rol, { foreignKey: 'rol_id', as: 'rol' });
   Rol.hasMany(User, { foreignKey: 'rol_id', as: 'usuarios' });
 

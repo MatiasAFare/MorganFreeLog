@@ -1,3 +1,4 @@
+// Cart model adapter
 const Cart = require("./sequelize/cart.model");
 const sequelize = require("../config/sequelize");
 

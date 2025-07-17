@@ -1,4 +1,5 @@
-const itemModel = require("../models/item.model.sequelize.js");
+// Shop service
+const itemModel = require("../models/item.model.sequelize");
 
 const shopService = {
   getAllItems: async (filters) => {
@@ -14,21 +15,21 @@ const shopService = {
     try {
       const existingItem = await itemModel.getById(id);
       if (!existingItem) {
-        throw new Error('Item no encontrado');
+        throw new Error("Item no encontrado");
       }
-      if (itemData.name && itemData.name.trim() === '') {
-        throw new Error('El nombre del item es requerido');
+      if (itemData.name && itemData.name.trim() === "") {
+        throw new Error("El nombre del item es requerido");
       }
       if (itemData.price && itemData.price < 0) {
-        throw new Error('El precio debe ser mayor o igual a 0');
+        throw new Error("El precio debe ser mayor o igual a 0");
       }
       if (itemData.stock && itemData.stock < 0) {
-        throw new Error('El stock debe ser mayor o igual a 0');
+        throw new Error("El stock debe ser mayor o igual a 0");
       }
       const updatedItem = await itemModel.updateItem(id, itemData);
       return updatedItem;
     } catch (error) {
-      console.error('Error en updateItem service:', error);
+      console.error("Error en updateItem service:", error);
       throw error;
     }
   },

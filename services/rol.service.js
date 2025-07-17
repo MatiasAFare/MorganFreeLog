@@ -1,4 +1,5 @@
-const RolModel = require('../models/rol.model.sequelize');
+// Role service
+const RolModel = require("../models/rol.model.sequelize");
 
 const RolService = {
   getById: async (id) => {

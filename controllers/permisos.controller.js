@@ -1,3 +1,4 @@
+// Permission controller
 const PermisoService = require("../services/permiso.service");
 const RolService = require("../services/rol.service");
 

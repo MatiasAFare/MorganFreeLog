@@ -1,3 +1,4 @@
+// User service
 const UserModel = require("../models/user.model.sequelize");
 const passwordUtil = require("../utils/password.util");
 
@@ -34,8 +35,11 @@ const UserService = {
         throw new Error("Invalid credentials");
       }
 
-      const isPasswordValid = await passwordUtil.verifyPassword(password, user.password);
-      
+      const isPasswordValid = await passwordUtil.verifyPassword(
+        password,
+        user.password
+      );
+
       if (!isPasswordValid) {
         throw new Error("Invalid credentials");
       }

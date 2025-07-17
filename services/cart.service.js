@@ -1,3 +1,4 @@
+// Cart service
 const cartModel = require("../models/cart.model.sequelize");
 
 const CartService = {

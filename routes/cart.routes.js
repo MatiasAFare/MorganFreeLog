@@ -1,3 +1,4 @@
+// Cart routes
 const express = require("express");
 const cartController = require("../controllers/cart.controller");
 const { checkPermiso } = require("../middleware/checkPermiso.middleware");

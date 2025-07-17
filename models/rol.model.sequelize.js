@@ -1,3 +1,4 @@
+// Role model adapter
 const Rol = require("./sequelize/rol.model");
 const User = require("./sequelize/user.model");
 

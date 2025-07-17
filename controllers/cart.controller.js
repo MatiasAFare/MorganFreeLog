@@ -1,8 +1,9 @@
+// Cart controller
 const cartService = require("../services/cart.service");
 const itemModel = require("../models/item.model.sequelize");
 
 const cartController = {
-  // ========== MÉTODOS API (JSON) ==========
+  // ========== MÉTODOS DE API (JSON) ==========
   getAllItems: async (req, res) => {
     try {
       const userId = req.session.userId || req.user.id || null;
@@ -34,7 +35,6 @@ const cartController = {
     }
   },
 
-  // NUEVA FUNCIONALIDAD: Vaciar carrito completo
   clearCart: async (req, res) => {
     try {
       const userId = req.session.userId || req.user?.id || null;
@@ -59,7 +59,6 @@ const cartController = {
     }
   },
 
-  // NUEVA FUNCIONALIDAD: Obtener total del carrito para modal
   getCartTotal: async (req, res) => {
     try {
       const userId = req.session.userId || req.user?.id || null;
@@ -93,7 +92,6 @@ const cartController = {
     }
   },
 
-  // NUEVA FUNCIONALIDAD: Procesar pago/compra
   processPurchase: async (req, res) => {
     try {
       const { purchaseId } = req.body;
@@ -224,6 +222,7 @@ const cartController = {
       res.redirect("/shop?error=Error al agregar el producto al carrito");
     }
   },
+  
   handleDelete: async (req, res) => {
     try {
       const { id } = req.params;
@@ -238,6 +237,7 @@ const cartController = {
       res.redirect(`/cart?error=${encodeURIComponent(error.message)}`);
     }
   },
+
   // NUEVA FUNCIONALIDAD: Manejar vaciar carrito desde vista
   handleClearCart: async (req, res) => {
     try {
@@ -259,6 +259,7 @@ const cartController = {
       res.redirect(`/cart?error=${encodeURIComponent("Error al vaciar el carrito")}`);
     }
   },
+
 };
 
 module.exports = cartController;

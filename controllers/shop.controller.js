@@ -1,7 +1,8 @@
+// Shop controller
 const shopService = require("../services/shop.service");
 
 const shopController = {
-  // ========== MÉTODOS API (JSON) ==========
+  // ========== MÉTODOS DE API (JSON) ==========
   getAllItems: async (req, res) => {
     try {
       const filters = req.query;
@@ -12,6 +13,7 @@ const shopController = {
       res.status(500).json({ message: "Error al obtener los items" });
     }
   },
+  
   getItemById: async (req, res) => {
     try {
       const itemId = req.params.id;
@@ -26,6 +28,7 @@ const shopController = {
     }
 
   },
+
   createItem: async (req, res) => {
     try {
       const { name, price, stock, category } = req.body;
@@ -45,6 +48,7 @@ const shopController = {
         .json({ message: "Error creating item", error: error.message });
     }
   },
+
   updateItem: async (req, res) => {
     try {
       const { id } = req.params;
@@ -68,6 +72,7 @@ const shopController = {
       });
     }
   },
+
   deleteItem: async (req, res) => {
     try {
       const itemId = req.params.id;
@@ -110,6 +115,7 @@ const shopController = {
       });
     }
   },
+
   showCreateForm: async (req, res) => {
     try {
       const categories = await shopService.getCategories();
@@ -124,6 +130,7 @@ const shopController = {
       });
     }
   },
+
   showDetails: async (req, res) => {
     const item = await shopController.getItemById(req, res);
     if (!item) {
@@ -138,6 +145,7 @@ const shopController = {
     });
 
   },
+
   showEditForm: async (req, res) => {
     try {
       const item = await shopController.getItemById(req, res);
@@ -230,10 +238,11 @@ const shopController = {
       });
     }
   },
+
   handleDelete: async (req, res) => {
     const itemId = req.params.id;
     try {
-      const result = shopService.deleteItem(itemId);
+      const result = await shopService.deleteItem(itemId);
       if (result.success) {
         return res.redirect('/shop?success=Item eliminado correctamente');
       } else {

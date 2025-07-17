@@ -1,3 +1,4 @@
+// Item model adapter
 const Item = require("./sequelize/item.model");
 const { Op } = require("sequelize");
 

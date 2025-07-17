@@ -1,3 +1,4 @@
+// Main application server
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
@@ -12,7 +13,7 @@ const app = express();
 dotenv.config();
 
 app.use(express.json());
-app.use(express.urlencoded({ extended: true })); // Para datos de formularios
+app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use(express.static("public"));
 
@@ -29,26 +30,22 @@ app.use(
 );
 
 app.use((req, res, next) => {
-  // Solo setear user si la sesión está realmente activa
   res.locals.user = req.session.isLoggedIn ? req.session.user : null;
   res.locals.isLoggedIn = !!req.session.isLoggedIn;
   next();
 });
 
-// Middleware universal para detectar usuario autenticado (sin bloquear rutas públicas)
+// Authentication middleware
 app.use(async (req, res, next) => {
   try {
-    // Verificar si la sesión realmente está activa
     if (!req.session.isLoggedIn) {
       req.user = null;
       return next();
     }
     
-    // Intentar obtener user_id de la sesión
     const userId = req.session?.user?.id || req.session?.userId || null;
     
     if (userId) {
-      // Si tenemos userId, obtener datos completos del usuario
       const UserService = require("./services/user.service");
       const user = await UserService.getUserById(userId);
       
@@ -56,7 +53,6 @@ app.use(async (req, res, next) => {
         req.user = user;
         console.log(`[Universal Auth] Usuario detectado: ${user.name} (ID: ${user.id})`);
       } else {
-        // Si el usuario no existe en BD, limpiar sesión
         console.log(`[Universal Auth] Usuario no encontrado en BD para ID: ${userId}, limpiando sesión`);
         req.session.destroy();
         req.user = null;
@@ -69,20 +65,16 @@ app.use(async (req, res, next) => {
   } catch (error) {
     console.error("Error en middleware universal de auth:", error);
     req.user = null;
-    next(); // Continuar sin bloquear
+    next();
   }
 });
 
-// ========== MORGAN LOGGING ==========
-// Crear stream personalizado para escribir a BD
+// Morgan logging configuration
 const logStream = {
   write: async (message) => {
     try {
-      // Morgan envía el mensaje con \n al final, lo removemos
       const cleanMessage = message.trim();
 
-      // Extraer información del mensaje usando el formato personalizado
-      // Formato esperado: "METHOD|URL|STATUS|USERID|MESSAGE"
       const parts = cleanMessage.split("|");
       if (parts.length >= 4) {
         const method = parts[0];
@@ -94,7 +86,6 @@ const logStream = {
 
         console.log(`[Log Write] URL: ${url}, Method: ${method}, User ID: ${userId}`);
 
-        // Crear log en BD
         await logService.createLog(userId, url, method, status, fullMessage);
       }
     } catch (error) {
@@ -103,38 +94,31 @@ const logStream = {
   },
 };
 
-// Middleware para capturar user_id antes del logging
 app.use((req, res, next) => {
-  // Obtener user_id de múltiples fuentes posibles (ahora req.user debería estar disponible)
   const userId = req.user?.id || req.session?.user?.id || req.session?.userId || null;
   global.currentUserId = userId;
   
-  // Agregar el user_id al objeto request para acceso posterior
   req.currentUserId = userId;
   
   next();
 });
 
-// Configurar Morgan con formato personalizado
 morgan.token("userId", (req) => {
-  // Intentar obtener user_id de múltiples fuentes
   const userId = req.user?.id || req.session?.user?.id || req.session?.userId || req.currentUserId || null;
   return userId || "anonymous";
 });
 
-// Crear token personalizado para user_id en el mensaje
 morgan.token("userIdForLog", (req) => {
   const userId = req.user?.id || req.session?.user?.id || req.session?.userId || req.currentUserId || null;
-  global.currentUserId = userId; // Actualizar el global también
+  global.currentUserId = userId;
   return userId !== null ? userId : "null";
 });
 
-// Formato personalizado: METHOD|URL|STATUS|USERID|FULL_MESSAGE
 const customFormat =
   ":method|:url|:status|:userIdForLog|:remote-addr :method :url :status :res[content-length] - :response-time ms";
 
 app.use(morgan(customFormat, { stream: logStream }));
-app.use(morgan("dev")); // También mostrar en consola para desarrollo
+app.use(morgan("dev"));
 
 app.use("/usuarios", require("./routes/user.routes"));
 app.use("/roles", require("./routes/roles.routes"));
@@ -157,7 +141,6 @@ app.use((req, res) => {
 
 const PORT = process.env.PORT || 3000;
 
-// Inicializar base de datos y arrancar servidor
 const startServer = async () => {
   try {
     await initializeDatabase();

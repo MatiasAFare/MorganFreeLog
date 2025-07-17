@@ -1,10 +1,10 @@
+// Log model adapter
 const Log = require("./sequelize/log.model");
 const User = require("./sequelize/user.model");
 const { Op } = require("sequelize");
 
 const logModelSequelize = {
   createLog: async (user_id, endpoint, method, status, message) => {
-    // Asegurar valores por defecto para campos requeridos
     const safeEndpoint = endpoint || "/";
     const safeMethod = method || "UNKNOWN";
     const safeStatus = status != null ? parseInt(status) : 0;
@@ -23,8 +23,6 @@ const logModelSequelize = {
 
   getAllLogs: async (filters = {}) => {
     const where = {};
-
-    // Filtros opcionales
     if (filters.user_id) {
       where.user_id = filters.user_id;
     }
@@ -43,19 +41,20 @@ const logModelSequelize = {
 
     const logs = await Log.findAll({
       where,
-      include: [{
-        model: User,
-        as: 'User', // Usar el alias definido en associations.js
-        attributes: ['name', 'email'],
-        required: false // LEFT JOIN para incluir logs sin usuario
-      }],
+      include: [
+        {
+          model: User,
+          as: "User",
+          attributes: ["name", "email"],
+          required: false,
+        },
+      ],
       order: [["timestamp", "DESC"]],
-      limit: 500, // Limitar a los últimos 500 registros
-      raw: true, // Para obtener objetos planos como en el modelo original
-      nest: true // Para estructurar los datos del JOIN
+      limit: 500,
+      raw: true,
+      nest: true,
     });
 
-    // Mapear los datos para mantener la estructura original
     return logs.map((log) => ({
       ...log,
       user_name: log.User?.name || "Usuario anónimo",
@@ -64,17 +63,19 @@ const logModelSequelize = {
   },
 
   getLogById: async (id) => {
-    const log = await Log.findByPk(id, { 
-      include: [{
-        model: User,
-        as: 'User', // Usar el alias definido en associations.js
-        attributes: ['name', 'email'],
-        required: false // LEFT JOIN para incluir logs sin usuario
-      }],
+    const log = await Log.findByPk(id, {
+      include: [
+        {
+          model: User,
+          as: "User",
+          attributes: ["name", "email"],
+          required: false,
+        },
+      ],
       raw: true,
-      nest: true
+      nest: true,
     });
-    
+
     if (!log) return null;
 
     // Mapear los datos para mantener la estructura original
@@ -85,6 +86,7 @@ const logModelSequelize = {
     };
   },
 
+  //TODO: Implementar autoborrado / borrado de logs antiguos
   deleteOldLogs: async (daysToKeep = 30) => {
     const dateThreshold = new Date();
     dateThreshold.setDate(dateThreshold.getDate() - daysToKeep);

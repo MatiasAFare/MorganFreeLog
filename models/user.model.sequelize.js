@@ -1,6 +1,8 @@
+// User model adapter
 const User = require("./sequelize/user.model");
 const Rol = require("./sequelize/rol.model");
 const userModelSequelize = {
+    
   getUserById: async (id) => {
     const user = await User.findByPk(id);
     return user ? user.toJSON() : null;

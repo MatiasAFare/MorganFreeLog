@@ -1,3 +1,4 @@
+// User controller
 const UserService = require("../services/user.service");
 const RolService = require("../services/rol.service");
 const PermisoService = require("../services/permiso.service");
@@ -14,7 +15,7 @@ const userController = {
         .json({ message: "Error fetching users", error: error.message });
     }
   },
-
+  
   getUserById: async (req, res) => {
     try {
       const user = await UserService.getUserById(req.params.id);
@@ -176,6 +177,7 @@ const userController = {
       });
     }
   },
+
   showDetails: async (req, res) => {
     try {
       const { id } = req.params;
@@ -228,7 +230,6 @@ const userController = {
       });
     }
   },
-
   handleUpdate: async (req, res) => {
     try {
       const { id } = req.params;
@@ -258,7 +259,6 @@ const userController = {
       });
     }
   },
-
   handleDelete: async (req, res) => {
     try {
       const { id } = req.params;

@@ -1,6 +1,6 @@
-const Permiso = require('./sequelize/permiso.model');
-const Rol = require('./sequelize/rol.model');
-const sequelize = require('../config/sequelize');
+// Permission model adapter
+const Permiso = require("./sequelize/permiso.model");
+const Rol = require("./sequelize/rol.model");
 
 const permisoModelSequelize = {
   getById: async (id) => {
