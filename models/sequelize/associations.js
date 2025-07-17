@@ -26,16 +26,16 @@ const setupAssociations = () => {
   });
 
   // Relación Cart -> User (muchos a uno)
-  Cart.belongsTo(User, { foreignKey: 'user_id', as: 'usuario' });
-  User.hasMany(Cart, { foreignKey: 'user_id', as: 'carrito' });
+  Cart.belongsTo(User, { foreignKey: 'user_id', as: 'usuario', onDelete: 'CASCADE' });
+  User.hasMany(Cart, { foreignKey: 'user_id', as: 'carrito', onDelete: 'CASCADE' });
 
   // Relación Cart -> Item (muchos a uno)
-  Cart.belongsTo(Item, { foreignKey: 'item_id', as: 'item' });
-  Item.hasMany(Cart, { foreignKey: 'item_id', as: 'enCarritos' });
+  Cart.belongsTo(Item, { foreignKey: 'item_id', as: 'item', onDelete: 'CASCADE' });
+  Item.hasMany(Cart, { foreignKey: 'item_id', as: 'enCarritos', onDelete: 'CASCADE' });
 
   // Relación Log -> User (muchos a uno)
-  Log.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
-  User.hasMany(Log, { foreignKey: 'user_id', as: 'logs' });
+  Log.belongsTo(User, { foreignKey: 'user_id', as: 'User', onDelete: 'CASCADE' });
+  User.hasMany(Log, { foreignKey: 'user_id', as: 'logs', onDelete: 'CASCADE' });
 };
 
 module.exports = { setupAssociations };
