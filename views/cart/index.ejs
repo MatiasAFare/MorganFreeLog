@@ -8,23 +8,50 @@
         text-align: center;
         margin-bottom: 30px;
       }
-      
+
       .header h1 {
         margin: 0 0 20px 0;
         color: var(--text-primary, #333);
         font-size: 2.5em;
-        text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
       }
-      
+
       .logo {
         width: 300px;
         height: 200px;
         object-fit: contain;
         border-radius: 15px;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         padding: 10px;
         margin: 0 auto;
         display: block;
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        background-color: var(--bg-secondary, #f8f9fa);
+        border-radius: 10px;
+        margin: 20px 0;
+        border: 2px dashed var(--border-primary, #ddd);
+      }
+
+      .empty-state img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        opacity: 0.6;
+        margin-bottom: 20px;
+      }
+
+      .empty-state h3 {
+        color: var(--text-muted, #666);
+        margin-bottom: 10px;
+      }
+
+      .empty-state p {
+        color: var(--text-muted, #666);
+        margin-bottom: 20px;
       }
     </style>
   </head>
@@ -38,9 +65,7 @@
 
       <% if (error) { %>
       <div class="alert alert-danger auto-hide"><%= error %></div>
-      <% } %>
-
-      <% if (typeof success !== 'undefined' && success) { %>
+      <% } %> <% if (typeof success !== 'undefined' && success) { %>
       <div class="alert alert-success auto-hide"><%= success %></div>
       <% } %>
 
@@ -62,10 +87,8 @@
           </tr>
         </thead>
         <tbody>
-          <% let total = 0; %>
-          <% items.forEach(item => { %>
-          <% const subtotal = item.price * item.quantity; %>
-          <% total += subtotal; %>
+          <% let total = 0; %> <% items.forEach(item => { %> <% const subtotal =
+          item.price * item.quantity; %> <% total += subtotal; %>
           <tr>
             <td><%= item.id %></td>
             <td><%= item.name %></td>
@@ -109,21 +132,30 @@
             Vaciar Carrito
           </button>
         </form>
-        <button type="button" class="btn btn-success" onclick="openPaymentModal()">
+        <button
+          type="button"
+          class="btn btn-success"
+          onclick="openPaymentModal()"
+        >
           Proceder al Pago
         </button>
       </div>
 
       <% } else { %>
-      <div class="empty-cart">
-        <p>Tu carrito está vacío.</p>
+      <div class="empty-state">
+        <img src="/morganshop.png" alt="Carrito vacío" />
+        <h3>🛒 Tu carrito está vacío</h3>
+        <p>
+          ¡Hora de ir de compras! Explora nuestros productos y encuentra algo
+          que te guste.
+        </p>
         <a href="/shop" class="btn btn-primary">Explorar Productos</a>
       </div>
       <% } %>
     </div>
 
     <!-- Modal de Pago -->
-    <div id="paymentModal" class="modal" style="display: none;">
+    <div id="paymentModal" class="modal" style="display: none">
       <div class="modal-content">
         <div class="modal-header">
           <h2>Confirmar Compra</h2>
@@ -135,10 +167,20 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" onclick="closePaymentModal()">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            onclick="closePaymentModal()"
+          >
             Cancelar
           </button>
-          <button type="button" class="btn btn-success" id="confirmPurchaseBtn" onclick="confirmPurchase()" disabled>
+          <button
+            type="button"
+            class="btn btn-success"
+            id="confirmPurchaseBtn"
+            onclick="confirmPurchase()"
+            disabled
+          >
             Confirmar Compra
           </button>
         </div>
@@ -149,16 +191,16 @@
       let currentPurchaseId = null;
 
       async function openPaymentModal() {
-        const modal = document.getElementById('paymentModal');
-        const summaryDiv = document.getElementById('purchase-summary');
-        const confirmBtn = document.getElementById('confirmPurchaseBtn');
-        
+        const modal = document.getElementById("paymentModal");
+        const summaryDiv = document.getElementById("purchase-summary");
+        const confirmBtn = document.getElementById("confirmPurchaseBtn");
+
         try {
-          modal.style.display = 'block';
-          summaryDiv.innerHTML = '<p>Cargando resumen de compra...</p>';
+          modal.style.display = "block";
+          summaryDiv.innerHTML = "<p>Cargando resumen de compra...</p>";
           confirmBtn.disabled = true;
 
-          const response = await fetch('/cart/api/total');
+          const response = await fetch("/cart/api/total");
           const data = await response.json();
 
           if (response.ok) {
@@ -171,12 +213,16 @@
                 <p><strong>Cantidad de Items:</strong> ${data.itemCount}</p>
                 <div class="items-list">
                   <h4>Productos:</h4>
-                  ${data.items.map(item => `
+                  ${data.items
+                    .map(
+                      (item) => `
                     <div class="item-summary">
                       <span>${item.name} x${item.quantity}</span>
                       <span>$${(item.price * item.quantity).toFixed(2)}</span>
                     </div>
-                  `).join('')}
+                  `
+                    )
+                    .join("")}
                 </div>
                 <div class="total-summary">
                   <h3><strong>Total: $${data.total.toFixed(2)}</strong></h3>
@@ -189,28 +235,28 @@
           }
         } catch (error) {
           summaryDiv.innerHTML = `<p class="error-message">Error al cargar el resumen</p>`;
-          console.error('Error:', error);
+          console.error("Error:", error);
         }
       }
 
       async function confirmPurchase() {
         if (!currentPurchaseId) return;
 
-        const confirmBtn = document.getElementById('confirmPurchaseBtn');
-        const summaryDiv = document.getElementById('purchase-summary');
-        
+        const confirmBtn = document.getElementById("confirmPurchaseBtn");
+        const summaryDiv = document.getElementById("purchase-summary");
+
         try {
           confirmBtn.disabled = true;
-          confirmBtn.textContent = 'Procesando...';
+          confirmBtn.textContent = "Procesando...";
 
-          const response = await fetch('/cart/api/purchase', {
-            method: 'POST',
+          const response = await fetch("/cart/api/purchase", {
+            method: "POST",
             headers: {
-              'Content-Type': 'application/json',
+              "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              purchaseId: currentPurchaseId
-            })
+              purchaseId: currentPurchaseId,
+            }),
           });
 
           const data = await response.json();
@@ -220,12 +266,14 @@
               <div class="success-message">
                 <h3>¡Compra Exitosa!</h3>
                 <p><strong>ID de Compra:</strong> ${data.purchase.id}</p>
-                <p><strong>Total:</strong> $${data.purchase.total.toFixed(2)}</p>
+                <p><strong>Total:</strong> $${data.purchase.total.toFixed(
+                  2
+                )}</p>
                 <p><strong>Estado:</strong> ${data.purchase.status}</p>
                 <p>Gracias por su compra. Su carrito ha sido vaciado.</p>
               </div>
             `;
-            
+
             // Recargar la página después de 2 segundos
             setTimeout(() => {
               window.location.reload();
@@ -233,29 +281,29 @@
           } else {
             summaryDiv.innerHTML = `<p class="error-message">Error: ${data.message}</p>`;
             confirmBtn.disabled = false;
-            confirmBtn.textContent = 'Confirmar Compra';
+            confirmBtn.textContent = "Confirmar Compra";
           }
         } catch (error) {
           summaryDiv.innerHTML = `<p class="error-message">Error al procesar la compra</p>`;
           confirmBtn.disabled = false;
-          confirmBtn.textContent = 'Confirmar Compra';
-          console.error('Error:', error);
+          confirmBtn.textContent = "Confirmar Compra";
+          console.error("Error:", error);
         }
       }
 
       function closePaymentModal() {
-        const modal = document.getElementById('paymentModal');
-        modal.style.display = 'none';
+        const modal = document.getElementById("paymentModal");
+        modal.style.display = "none";
         currentPurchaseId = null;
       }
 
       // Cerrar modal al hacer clic fuera de él
-      window.onclick = function(event) {
-        const modal = document.getElementById('paymentModal');
+      window.onclick = function (event) {
+        const modal = document.getElementById("paymentModal");
         if (event.target === modal) {
           closePaymentModal();
         }
-      }
+      };
     </script>
 
     <style>
@@ -266,7 +314,7 @@
         top: 0;
         width: 100%;
         height: 100%;
-        background-color: rgba(0,0,0,0.7);
+        background-color: rgba(0, 0, 0, 0.7);
       }
 
       .modal-content {
@@ -278,7 +326,7 @@
         border-radius: 8px;
         width: 90%;
         max-width: 600px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
       }
 
       .modal-header {

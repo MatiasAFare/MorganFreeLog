@@ -184,6 +184,33 @@
         margin: 0 auto;
         display: block;
       }
+      
+      .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        background-color: var(--bg-secondary, #f8f9fa);
+        border-radius: 10px;
+        margin: 20px 0;
+        border: 2px dashed var(--border-primary, #ddd);
+      }
+      
+      .empty-state img {
+     width:100%;
+     height:100%;
+        object-fit: contain;
+        opacity: 0.6;
+        margin-bottom: 20px;
+      }
+      
+      .empty-state h3 {
+        color: var(--text-muted, #666);
+        margin-bottom: 10px;
+      }
+      
+      .empty-state p {
+        color: var(--text-muted, #666);
+        margin-bottom: 20px;
+      }
     </style>
   </head>
 
@@ -354,12 +381,11 @@
       </table>
       
       <% if (items.length === 0) { %>
-      <div class="card">
-        <div class="card-body">
-          <p style="text-align: center; margin: 0; color: var(--text-secondary);">
-            📦 No hay items disponibles que coincidan con los filtros seleccionados.
-          </p>
-        </div>
+      <div class="empty-state">
+        <img src="/morganshop.png" alt="Sin items">
+        <h3>🛍️ No hay productos disponibles</h3>
+        <p>No hay items que coincidan con los filtros seleccionados, o aún no hay productos en la tienda.</p>
+        <a href="/shop/items-new" class="btn btn-primary">Agregar Primer Producto</a>
       </div>
       <% } %>
     </div>
